@@ -33,7 +33,7 @@ use pocketmine\network\protocol\AddPlayerPacket;
 use pocketmine\network\protocol\AdventureSettingsPacket;
 use pocketmine\network\protocol\AnimatePacket;
 use pocketmine\network\protocol\AvailableCommandsPacket;
-//use pocketmine\network\protocol\BatchPacket;
+use pocketmine\network\protocol\BatchPacket;
 use pocketmine\network\protocol\BlockEntityDataPacket;
 use pocketmine\network\protocol\BlockEventPacket;
 use pocketmine\network\protocol\BossEventPacket; 
@@ -227,7 +227,7 @@ class Network {
 		return $this->server;
 	}
 
-	/*public function processBatch(BatchPacket $packet, Player $p){
+	public function processBatch(BatchPacket $packet, Player $p){
 		try{
 			if(strlen($packet->payload) === 0){
 				//prevent zlib_decode errors for incorrectly-decoded packets
@@ -246,9 +246,9 @@ class Network {
 			while($stream->offset < $len){
 				$buf = $stream->getString();
 				if(($pk = $this->getPacket(ord($buf{0}))) !== null){
-					if($pk::NETWORK_ID === Info::BATCH_PACKET){
+					/*if($pk::NETWORK_ID === 0xfe){
 						throw new \InvalidStateException("Invalid BatchPacket inside BatchPacket");
-					}
+					}*/
 
 					$pk->setBuffer($buf, 1);
 
@@ -266,7 +266,7 @@ class Network {
 				}
 			}
 		}
-	}*/
+	}
 
 	/**
 	 * @param $id
@@ -329,7 +329,7 @@ class Network {
 		$this->registerPacket(ProtocolInfo::ADVENTURE_SETTINGS_PACKET, AdventureSettingsPacket::class);
 		$this->registerPacket(ProtocolInfo::ANIMATE_PACKET, AnimatePacket::class);
 		$this->registerPacket(ProtocolInfo::AVAILABLE_COMMANDS_PACKET, AvailableCommandsPacket::class);
-		//$this->registerPacket(ProtocolInfo::BATCH_PACKET, BatchPacket::class);
+		$this->registerPacket(0xfe, BatchPacket::class);
 		$this->registerPacket(ProtocolInfo::BLOCK_ENTITY_DATA_PACKET, BlockEntityDataPacket::class);
 		$this->registerPacket(ProtocolInfo::BLOCK_EVENT_PACKET, BlockEventPacket::class);
 		$this->registerPacket(ProtocolInfo::BOSS_EVENT_PACKET, BossEventPacket::class); 

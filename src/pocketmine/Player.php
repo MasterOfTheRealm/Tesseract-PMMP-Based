@@ -2001,11 +2001,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return;
 		}
 
-		/*if($packet::NETWORK_ID === ProtocolInfo::BATCH_PACKET){
-			/** @var BatchPacket $packet *
+		if($packet::NETWORK_ID === 0xfe){
+			/** @var BatchPacket $packet */
 			$this->server->getNetwork()->processBatch($packet, $this);
 			return;
-		}*/
+		}
 
 		$timings = Timings::getReceiveDataPacketTimings($packet);
 

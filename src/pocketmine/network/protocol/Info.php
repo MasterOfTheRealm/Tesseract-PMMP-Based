@@ -31,8 +31,8 @@ interface Info{
 	 * Actual Minecraft: PE protocol version
 	 */
 	
-	const CURRENT_PROTOCOL = 107;//Unsure of these at the moment
-	const ACCEPTED_PROTOCOLS = [107];
+	const CURRENT_PROTOCOL = 110;
+	const ACCEPTED_PROTOCOLS = [110];
 	const MINECRAFT_VERSION = "v1.1.0.0";
 	const MINECRAFT_VERSION_NETWORK = "1.1.0.0";
 
@@ -41,7 +41,6 @@ interface Info{
 	const SERVER_TO_CLIENT_HANDSHAKE_PACKET = 0x03;
 	const CLIENT_TO_SERVER_HANDSHAKE_PACKET = 0x04;
 	const DISCONNECT_PACKET = 0x05;
-	//const BATCH_PACKET = 0x06;
 	const RESOURCE_PACKS_INFO_PACKET = 0x06;
 	const RESOURCE_PACK_STACK_PACKET = 0x07; //ResourcePacksStackPacket
 	const RESOURCE_PACK_CLIENT_RESPONSE_PACKET = 0x08;
