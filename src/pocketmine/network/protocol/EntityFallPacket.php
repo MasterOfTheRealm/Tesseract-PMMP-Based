@@ -24,9 +24,9 @@ namespace pocketmine\network\protocol;
 #include <rules/DataPacket.h>
 
 
-class PlayerFallPacket extends DataPacket{
+class EntityFallPacket extends DataPacket{
 
-	const NETWORK_ID = Info::PLAYER_FALL_PACKET;
+	const NETWORK_ID = Info::ENTITY_FALL_PACKET;
 
 	public $fallDistance;
 
