@@ -28,7 +28,29 @@ class BaseLang {
 
     const FALLBACK_LANGUAGE = "eng";
 
-    protected $langName;
+    public static function getLanguageList(string $path = "") : array{
+        if($path === ""){
+            $path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
+        }
+
+        $files = array_filter(scandir($path), function($filename){
+            return substr($filename, -4) === ".ini";
+        });
+
+        $result = [];
+
+        foreach($files as $file){
+            $strings = [];
+            self::loadLang($path . $file, $strings);
+            if(isset($strings["language.name"])){
+                $result[substr($file, 0, -4)] = $strings["language.name"];
+            }
+        }
+
+        return $result;
+    }
+
+	protected $langName;
 
     protected $lang = [];
     protected $fallbackLang = [];
@@ -41,9 +63,9 @@ class BaseLang {
             $path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
         }
 
-        $this->loadLang($path . $this->langName . ".ini", $this->lang);
-        $this->loadLang($path . $fallback . ".ini", $this->fallbackLang);
-    }
+		self::loadLang($path . $this->langName . ".ini", $this->lang);
+		self::loadLang($path . $fallback . ".ini", $this->fallbackLang);
+	}
 
     public function getName(): string {
         return $this->get("language.name");
@@ -53,13 +75,13 @@ class BaseLang {
         return $this->langName;
     }
 
-    protected function loadLang($path, array &$d) {
-        if (file_exists($path) and strlen($content = file_get_contents($path)) > 0) {
-            foreach (explode("\n", $content) as $line) {
-                $line = trim($line);
-                if ($line === "" or $line{0} === "#") {
-                    continue;
-                }
+	protected static function loadLang($path, array &$d){
+		if(file_exists($path) and strlen($content = file_get_contents($path)) > 0){
+			foreach(explode("\n", $content) as $line){
+				$line = trim($line);
+				if($line === "" or $line{0} === "#"){
+					continue;
+				}
 
                 $t = explode("=", $line);
                 if (count($t) < 2) {
