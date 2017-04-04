@@ -304,7 +304,7 @@ class Potion extends Item{
 			case self::WEAKNESS_T:
 				return "Potion of Weakness";
 			case self::DECAY:
-				return "Potion of WHTHER II";
+				return "Potion of Wither II";
 			default:
 				return "Potion";
 		}
