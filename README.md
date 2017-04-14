@@ -3,24 +3,24 @@
 ## Tesseract Introduction
 -------------
 **Tesseract is the advanced server software based on PocketMine-MP and Genisys! <br>
-Tesseract supports only the world type of Anvil or PMAnvil. (MCRegion support is [deprecated](https://www.google.com/search?q=deprecated&oq=deprecated&aqs=chrome.0.69i59j69i61.1457j0j7&sourceid=chrome&ie=UTF-8)) <br>
-Tesseract supports packet and event debug system (for plugin developers)**
+Tesseract supports packet and event debug system (for plugin developers) <br>
+Contact us on [Gitter](https://gitter.im/TesseractTeam/Lobby?utm_source=ios&utm_medium=link&utm_campaign=ios-share-link) for support**
 
 ## Information Title
-**TEXTURES PACKS 1.0.4 DO NOT DISPLAY THE TITLES! PLEASE REMOVE YOUR TEXTURES PACK 1.0.4 TO HAVE THE TITLES ON YOUR SERVERS! :)** <br>
+**TEXTURES PACKS CURRENTLY ARE IN BETA, PLEASE REPORT ANY BUGS!** <br>
 
 ## Notice
 
-**Tesseract is supported to Minecraft:PE 1.0.5 (PE & Win10) <br>
+**Tesseract is supported to Minecraft:PE 1.0.6 & [1.1.0 beta](https://github.com/TesseractTeam/Tesseract/tree/MCPE-1.1-Beta)  (PE & Win10) <br>
 Report any issues and we will try to fix them for you.**  <br>
 
 ## Builds
-
 __Travis-CI Build:__<br>
  [![Travis-CI](https://travis-ci.org/TesseractTeam/Tesseract.svg?branch=master)](https://travis-ci.org/TesseractTeam/Tesseract)<br>
- __Jenkins Build:__<br>
-[![Jenkins](https://travis-ci.org/TesseractTeam/Tesseract.svg?branch=master)](https://jenkins.imgcl.co/job/Tesseract/)
+ __CircleCI Build__<br>
+[![CircleCI](https://circleci.com/gh/circleci/mongofinil.svg?&style=shield&circle-token=8678c9589c2e09b659783b4d7a65365fa982127e/)](https://circleci.com/gh/TesseractTeam/Tesseract)
 
+Phars have been temporarily disabled as we are experiencing errors when compiling, for now run from the src!
 ## Quick Links (Instead of scrolling, click these!)
 
 __[Installation](#installation)__ <br>
@@ -47,7 +47,6 @@ __[here](https://www.microsoft.com/en-us/download/details.aspx?id=48145)__ <br>
 
 __[Back to QuickLinks](#quick-links-instead-of-scrolling-click-these)__
 <br>
-
 
 ## Acknowledgements
 

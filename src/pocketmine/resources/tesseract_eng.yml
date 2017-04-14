@@ -1,18 +1,19 @@
 #
-#  _______                                _   
-# |__   __|                              | |  
-#    | | ___  ___ ___  ___ _ __ __ _  ___| |_ 
+#  _______                                _
+# |__   __|                              | |
+#    | | ___  ___ ___  ___ _ __ __ _  ___| |_
 #    | |/ _ \/ __/ __|/ _ \ '__/ _` |/ __| __|
-#    | |  __/\__ \__ \  __/ | | (_| | (__| |_ 
+#    | |  __/\__ \__ \  __/ | | (_| | (__| |_
 #    |_|\___||___/___/\___|_|  \__,_|\___|\__|
-#                                             
-#                                             
+#
+#
 #
 #The advanced configuration for Tesseract
 
 #Version of this file
 config:
  version: 29
+
 level:
  #This settting decides if weather is enabled in game (rain may cause lag to older devices)
  weather: true
@@ -21,6 +22,7 @@ level:
  weather-random-duration-min: 6000
  weather-random-duration-max: 12000
  #This setting controls the interval of lightning strikes in game，default 200 as 10s, 0 = disable
+ #This setting will only take effect when lightning weather is active in the world
  lightning-time: 200
  #This setting will decide if lightning strikes have fire after they strike
  lightning-fire: false
@@ -36,6 +38,10 @@ network:
  #This setting decides if you want RakLib to be disabled, RakLib connects a server for it to load for a client
  #If you do not know what this does, keep it set to false
  raklib-disable: false
+
+packs:
+  force-resources: false
+  resource-stack: []
  
 player:
  #This setting decides if hunger will be enabled in game
@@ -54,7 +60,7 @@ player:
  #This may cause lag if set to high values, if you experience crashes, put it below 10
  #It can also be disabled by setting "-1" for the value
  chunk-radius: -1
- 
+
 anticheat:
  #This setting decides if the system tracks the movement speed and position of everyone in game, it will see if it is good or bad
  #Recommended that it stays "true", but set it to "false" if it bugs out players that do not use modifiers
@@ -63,24 +69,19 @@ anticheat:
  #Recommended that it stays "false"
  allow-instabreak: false
  #This setting decides if flying will be detected/tracked or not
- #Recommended it is set to "true", but set it to "false" if it bugs out players that do not use modifiers
+ #Recommended it is set to "true", but sst it to "false" if it bugs out players that do not use modifiers
  anti-fly: true
 
 developer:
   #This setting allows the server to load plugins through the source directory over a .phar file
   #Recommended that it stays "false"
   folder-plugin-loader: true
- 
+
 server:
  #This setting decides if the server.log file will not be made/written.
  disable-log: false
  #This setting decides if the async chunks request will be enabled upon server loading/rebooting
  async-chunk-request: true
- #This setting chooses how to remind players when someone joins the game
- #0 = Message, 1 = Tip, 2 = Popup
- player-msg-type: 0
- login-msg: "§3@player joined the game"
- logout-msg: "§3@player left the game"
  #This setting decides if limited creative is enabled in game
  #If set to true true, then players cannot drop items from hotbar, cannot open chests, and so on
  limited-creative: true
@@ -130,7 +131,7 @@ dserver:
  server-list: ""
 
 inventory:
- #Set this setting to true if you have problems with anvils. 
+ #Set this setting to true if you have problems with anvils.
  #This will process inventory transactions in a vanilla fashion with no anti-cheats or verification.
  #If enchants do not work on PE or Windows 10, please enable cheats.
  allow-cheats: false

@@ -277,9 +277,6 @@ class Server{
 	public $lightningTime = 200;
 	public $lightningFire = false;
 	public $version;
-	public $playerMsgType = self::PLAYER_MSG_TYPE_MESSAGE;
-	public $playerLoginMsg = "";
-	public $playerLogoutMsg = "";
 	public $autoClearInv = true;
 	public $dserverConfig = [];
 	public $dserverPlayers = 0;
@@ -300,6 +297,8 @@ class Server{
 	public $antiFly = true;
 	public $allowInstabreak = false;
 	public $folderpluginloader = false;
+	public $forceResources = false;
+	public $resourceStack = [];
 	
 	/**
 	 * @return string
@@ -1429,9 +1428,6 @@ class Server{
 	}
 
 	public function loadAdvancedConfig(){
-		$this->playerMsgType = $this->getAdvancedProperty("server.player-msg-type", self::PLAYER_MSG_TYPE_MESSAGE);
-		$this->playerLoginMsg = $this->getAdvancedProperty("server.login-msg", "§3@player joined the game");
-		$this->playerLogoutMsg = $this->getAdvancedProperty("server.logout-msg", "§3@player left the game");
 		$this->weatherEnabled = $this->getAdvancedProperty("level.weather", true);
 		$this->foodEnabled = $this->getAdvancedProperty("player.hunger", true);
 		$this->expEnabled = $this->getAdvancedProperty("player.experience", true);
@@ -1474,6 +1470,9 @@ class Server{
 		$this->allowInstabreak = $this->getAdvancedProperty("anticheat.allow-instabreak", true);
 		$this->antiFly = $this->getAdvancedProperty("anticheat.anti-fly", true);
 		$this->folderpluginloader = $this->getAdvancedProperty("developer.folder-plugin-loader", false);
+
+		$this->forceResources = $this->getAdvancedProperty("packs.force-resources", false);
+		$this->resourceStack = $this->getAdvancedProperty("packs.resource-stack", []);
 	}
 	
 	/**
@@ -1554,6 +1553,7 @@ class Server{
 				$content = file_get_contents($this->filePath . "src/pocketmine/resources/pocketmine.yml");
 				@file_put_contents($this->dataPath . "pocketmine.yml", $content);
 			}
+			if(!is_dir($this->pluginPath."Tesseract")) mkdir($this->pluginPath."Tesseract");
 			$this->config = new Config($configPath = $this->dataPath . "pocketmine.yml", Config::YAML, []);
 			$this->console = new CommandReader($logger);
 			$this->properties = new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
@@ -2455,8 +2455,8 @@ class Server{
 	private function checkTickUpdates($currentTick, $tickTime){
 		foreach($this->players as $p){
 			if(!$p->loggedIn and ($tickTime - $p->creationTime) >= 10){
-				$p->close("", "Login timeout");
-			}elseif($this->alwaysTickPlayers){
+                $p->close("", "Login timeout");
+            }elseif($this->alwaysTickPlayers){
 				$p->onUpdate($currentTick);
 			}
 		}
