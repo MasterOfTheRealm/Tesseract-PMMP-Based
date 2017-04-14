@@ -46,8 +46,8 @@ class ContainerSetContentPacket extends DataPacket{
 	}
 
 	public function decode(){
-		$this->windowid = $this->getUsignedVarInt();
-		$this->targetEid = $this->getEntityUniqueId();
+		$this->windowid = $this->getUnsignedVarInt();
+		$this->targetEid = $this->getEntityId();
 		$count = $this->getUnsignedVarInt();
 		for($s = 0; $s < $count and !$this->feof(); ++$s){
 			$this->slots[$s] = $this->getSlot();
@@ -63,7 +63,7 @@ class ContainerSetContentPacket extends DataPacket{
 	public function encode(){
 		$this->reset();
 		$this->putUnsignedVarInt($this->windowid);
-		$this->putEntityUniqueId($this->targetEid);
+		$this->putEntityId($this->targetEid);
 		$this->putUnsignedVarInt(count($this->slots));
 		foreach($this->slots as $slot){
 			$this->putSlot($slot);
