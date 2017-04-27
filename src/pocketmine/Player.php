@@ -2374,7 +2374,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						if($this->startAction > -1 and $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION)){
 							if($this->inventory->getItemInHand()->getId() === Item::BOW){
 								$bow = $this->inventory->getItemInHand();
-								if($this->isSurvival() and !$this->inventory->contains(Item::get(Item::ARROW, -1))){
+								if($this->isSurvival() and (!$this->inventory->contains(Item::get(Item::ARROW, -1) or $bow->hasEnchantment(22))){
 									$this->inventory->sendContents($this);
 									break;
 								}
