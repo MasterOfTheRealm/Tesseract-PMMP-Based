@@ -757,6 +757,11 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$pk->z = $this->z;
 				$this->dataPacket($pk);
 				$this->shouldSendStatus = true;
+				if($targetLevel->getDimension() === ChangeDimensionPacket::DIMENSION_NETHER){
+					$pk = new PlayStatusPacket();
+					$pk->status = PlayStatusPacket::PLAYER_SPAWN;
+					$this->dataPacket($pk);
+				}
 			}
 			$targetLevel->getWeather()->sendWeather($this);
 
