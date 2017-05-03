@@ -47,4 +47,12 @@ class ResourcePackChunkDataPacket extends DataPacket{
 		$this->putLInt(strlen($this->data));
 		$this->put($this->data);
 	}
+
+	/**
+	 * @return PacketName|string
+	 */
+	public function getName(){
+		return "ResourcePackChunkDataPacket";
+	}
+
 }
