@@ -2732,4 +2732,8 @@ class Server{
 
 		return true;
 	}
+	
+	public function __sleep(){
+		throw new \BadMethodCallException("Cannot serialize Server instance");
+	}
 }

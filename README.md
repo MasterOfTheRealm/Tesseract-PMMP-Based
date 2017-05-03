@@ -4,14 +4,14 @@
 -------------
 **Tesseract is the advanced server software based on PocketMine-MP and Genisys! <br>
 Tesseract supports packet and event debug system (for plugin developers) <br>
-Contact us on [Gitter](https://gitter.im/TesseractTeam/Lobby?utm_source=ios&utm_medium=link&utm_campaign=ios-share-link) for support**
+Contact us on [DISCORD](https://discord.gg/zYZmpec) for support**
 
 ## Information Title
 **TEXTURES PACKS CURRENTLY ARE IN BETA, PLEASE REPORT ANY BUGS!** <br>
 
 ## Notice
 
-**Tesseract is supported to Minecraft:PE 1.0.6 & [1.1.0 beta](https://github.com/TesseractTeam/Tesseract/tree/MCPE-1.1-Beta)  (PE & Win10) <br>
+**Tesseract is supported to Minecraft:PE 1.0.7 & [1.1.0 beta](https://github.com/TesseractTeam/Tesseract/tree/MCPE-1.1-Beta)  (PE & Win10) <br>
 Report any issues and we will try to fix them for you.**  <br>
 
 ## Builds
@@ -20,7 +20,6 @@ __Travis-CI Build:__<br>
  __CircleCI Build__<br>
 [![CircleCI](https://circleci.com/gh/circleci/mongofinil.svg?&style=shield&circle-token=8678c9589c2e09b659783b4d7a65365fa982127e/)](https://circleci.com/gh/TesseractTeam/Tesseract)
 
-Phars have been temporarily disabled as we are experiencing errors when compiling, for now run from the src!
 ## Quick Links (Instead of scrolling, click these!)
 
 __[Installation](#installation)__ <br>

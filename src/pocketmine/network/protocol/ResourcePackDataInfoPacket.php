@@ -54,4 +54,11 @@ class ResourcePackDataInfoPacket extends DataPacket{
 		return $session->handleResourcePackDataInfo($this);
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getName(){
+		return "ResourcePackDataInfoPacket";
+	}
+
 }
