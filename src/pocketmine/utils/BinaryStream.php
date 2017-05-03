@@ -266,7 +266,7 @@ class BinaryStream extends \stdClass{
 	public function getEntityId(){
 		return $this->getVarInt();
 	}
-	
+
 	public function putEntityId($v){
 		$this->putVarInt($v);
 	}
@@ -282,13 +282,13 @@ class BinaryStream extends \stdClass{
 		$this->putUnsignedVarInt($y);
 		$this->putVarInt($z);
 	}
-	
+
 	public function getVector3f(&$x, &$y, &$z){
 		$x = $this->getLFloat(4);
 		$y = $this->getLFloat(4);
 		$z = $this->getLFloat(4);
 	}
-	
+
 	public function putVector3f($x, $y, $z){
 		$this->putLFloat($x);
 		$this->putLFloat($y);
