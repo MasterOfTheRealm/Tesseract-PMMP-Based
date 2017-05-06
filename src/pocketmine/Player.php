@@ -757,11 +757,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 				$pk->z = $this->z;
 				$this->dataPacket($pk);
 				$this->shouldSendStatus = true;
-				if($targetLevel->getDimension() === ChangeDimensionPacket::DIMENSION_NETHER){
-					$pk = new PlayStatusPacket();
-					$pk->status = PlayStatusPacket::PLAYER_SPAWN;
-					$this->dataPacket($pk);
-				}
 			}
 			$targetLevel->getWeather()->sendWeather($this);
 
@@ -1991,7 +1986,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 			return;
 		}
 
-		if($packet::NETWORK_ID === 0xfe){
+		if($packet::NETWORK_ID === ProtocolInfo::BATCH_PACKET){
 			/** @var BatchPacket $packet */
 			$this->server->getNetwork()->processBatch($packet, $this);
 			return;
@@ -2379,7 +2374,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 						if($this->startAction > -1 and $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION)){
 							if($this->inventory->getItemInHand()->getId() === Item::BOW){
 								$bow = $this->inventory->getItemInHand();
-								if($this->isSurvival() and (!$this->inventory->contains(Item::get(Item::ARROW, -1)))){
+								if($this->isSurvival() and !$this->inventory->contains(Item::get(Item::ARROW, -1))){
 									$this->inventory->sendContents($this);
 									break;
 								}
