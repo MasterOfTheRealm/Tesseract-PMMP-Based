@@ -17,6 +17,7 @@ namespace raklib\protocol;
 
 #ifndef COMPILE
 use raklib\Binary;
+
 #endif
 
 #include <rules/RakLibPacket.h>
@@ -24,9 +25,14 @@ use raklib\Binary;
 abstract class Packet{
 	public static $ID = -1;
 
-	protected $offset = 0;
+	public $offset = 0;
 	public $buffer;
 	public $sendTime;
+
+	public function __construct(string $buffer = "", int $offset = 0){
+		$this->buffer = $buffer;
+		$this->offset = $offset;
+	}
 
 	protected function get($len){
 		if($len < 0){
@@ -37,15 +43,10 @@ abstract class Packet{
 			return substr($this->buffer, $this->offset);
 		}
 
-		$buffer = "";
-		for(; $len > 0; --$len, ++$this->offset){
-			$buffer .= $this->buffer{$this->offset};
-		}
-
-		return $buffer;
+		return $len === 1 ? $this->buffer{$this->offset++} : substr($this->buffer, ($this->offset += $len) - $len, $len);
 	}
 
-	protected function getLong($signed = true){
+	protected function getLong(){
 		return Binary::readLong($this->get(8));
 	}
 
@@ -76,7 +77,7 @@ abstract class Packet{
 	protected function getAddress(&$addr, &$port, &$version = null){
 		$version = $this->getByte();
 		if($version === 4){
-			$addr = ((~$this->getByte()) & 0xff) .".". ((~$this->getByte()) & 0xff) .".". ((~$this->getByte()) & 0xff) .".". ((~$this->getByte()) & 0xff);
+			$addr = ((~$this->getByte()) & 0xff) . "." . ((~$this->getByte()) & 0xff) . "." . ((~$this->getByte()) & 0xff) . "." . ((~$this->getByte()) & 0xff);
 			$port = $this->getShort(false);
 		}else{
 			//TODO: IPv6
@@ -119,7 +120,7 @@ abstract class Packet{
 		$this->putShort(strlen($v));
 		$this->put($v);
 	}
-	
+
 	protected function putAddress($addr, $port, $version = 4){
 		$this->putByte($version);
 		if($version === 4){
@@ -133,17 +134,24 @@ abstract class Packet{
 	}
 
 	public function encode(){
-		$this->buffer = chr(static::$ID);
+		$this->reset();
+		$this->putByte(static::$ID);
 	}
 
 	public function decode(){
 		$this->offset = 1;
 	}
 
+	public function reset(){
+		$this->buffer = "";
+		$this->offset = 0;
+	}
+
 	public function clean(){
 		$this->buffer = null;
 		$this->offset = 0;
 		$this->sendTime = null;
+
 		return $this;
 	}
 }

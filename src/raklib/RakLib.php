@@ -56,7 +56,8 @@ abstract class RakLib{
 	const PRIORITY_NORMAL = 0;
 	const PRIORITY_IMMEDIATE = 1;
 
-	const FLAG_NEED_ACK = 0b00001000;
+	const IP_HEADER_LENGTH = 20;
+	const UDP_HEADER_LENGTH  = 8;
 
 	/*
 	 * Internal Packet:
@@ -139,14 +140,6 @@ abstract class RakLib{
 	 * int (timeout)
 	 */
 	const PACKET_BLOCK_ADDRESS = 0x09;
-
-	/*
-	 * RAW payload:
-	 * byte (address length)
-	 * byte[] (address)
-	 */
-
-	const PACKET_UNBLOCK_ADDRESS = 0x0a;
 
 	/*
 	 * No payload
