@@ -30,10 +30,10 @@ class ResourcePacksInfoPacket extends DataPacket{
 
 	const NETWORK_ID = Info::RESOURCE_PACKS_INFO_PACKET;
 
-	public $mustAccept = false;
-
+	public $mustAccept = false; //force client to use selected resource packs
 	/** @var ResourcePackInfoEntry */
 	public $behaviorPackEntries = [];
+	/** @var ResourcePackInfoEntry */
 	public $resourcePackEntries = [];
 
 	public function decode(){
@@ -60,7 +60,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 
 	/**
 	 * @return string
-	 */
+     */
 	public function getName(){
 		return "ResourcePacksInfoPacket";
 	}
