@@ -13,8 +13,6 @@
  *
  */
 
-declare(strict_types=1);
-
 namespace raklib\server;
 
 
@@ -42,9 +40,9 @@ class RakLibServer extends \Thread{
 	 * @param int             $port
 	 * @param string          $interface
 	 *
-	 * @throws \Exception
+	 * @throws \Throwable
 	 */
-	public function __construct(\ThreadedLogger $logger, \ClassLoader $loader, int $port, string $interface = "0.0.0.0"){
+	public function __construct(\ThreadedLogger $logger, \ClassLoader $loader, $port, $interface = "0.0.0.0"){
 		$this->port = (int) $port;
 		if($port < 1 or $port > 65536){
 			throw new \Exception("Invalid port range");
@@ -84,7 +82,7 @@ class RakLibServer extends \Thread{
 		}
 	}
 
-	public function isShutdown() : bool{
+	public function isShutdown(){
 		return $this->shutdown === true;
 	}
 
@@ -92,36 +90,36 @@ class RakLibServer extends \Thread{
 		$this->shutdown = true;
 	}
 
-	public function getPort() : int{
+	public function getPort(){
 		return $this->port;
 	}
 
-	public function getInterface() : string{
+	public function getInterface(){
 		return $this->interface;
 	}
 
 	/**
 	 * @return \ThreadedLogger
 	 */
-	public function getLogger() : \ThreadedLogger{
+	public function getLogger(){
 		return $this->logger;
 	}
 
 	/**
 	 * @return \Threaded
 	 */
-	public function getExternalQueue() : \Threaded{
+	public function getExternalQueue(){
 		return $this->externalQueue;
 	}
 
 	/**
 	 * @return \Threaded
 	 */
-	public function getInternalQueue() : \Threaded{
+	public function getInternalQueue(){
 		return $this->internalQueue;
 	}
 
-	public function pushMainToThreadPacket(string $str){
+	public function pushMainToThreadPacket($str){
 		$this->internalQueue[] = $str;
 	}
 
@@ -129,7 +127,7 @@ class RakLibServer extends \Thread{
 		return $this->internalQueue->shift();
 	}
 
-	public function pushThreadToMainPacket(string $str){
+	public function pushThreadToMainPacket($str){
 		$this->externalQueue[] = $str;
 	}
 
@@ -164,21 +162,23 @@ class RakLibServer extends \Thread{
 			E_DEPRECATED => "E_DEPRECATED",
 			E_USER_DEPRECATED => "E_USER_DEPRECATED",
 		];
-		$errno = $errorConversion[$errno] ?? $errno;
-
-		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
+		$errno = isset($errorConversion[$errno]) ? $errorConversion[$errno] : $errno;
+		if(($pos = strpos($errstr, "\n")) !== false){
+			$errstr = substr($errstr, 0, $pos);
+		}
+		$oldFile = $errfile;
 		$errfile = $this->cleanPath($errfile);
 
 		$this->getLogger()->debug("An $errno error happened: \"$errstr\" in \"$errfile\" at line $errline");
 
-		foreach(($trace = $this->getTrace($trace === null ? 2 : 0, $trace)) as $i => $line){
+		foreach(($trace = $this->getTrace($trace === null ? 3 : 0, $trace)) as $i => $line){
 			$this->getLogger()->debug($line);
 		}
 
 		return true;
 	}
 
-	public function getTrace($start = 0, $trace = null){
+	public function getTrace($start = 1, $trace = null){
 		if($trace === null){
 			if(function_exists("xdebug_get_function_stack")){
 				$trace = array_reverse(xdebug_get_function_stack());
@@ -208,33 +208,30 @@ class RakLibServer extends \Thread{
 		return $messages;
 	}
 
-	public function cleanPath(string $path) : string{
+	public function cleanPath($path){
 		return rtrim(str_replace(["\\", ".php", "phar://", rtrim(str_replace(["\\", "phar://"], ["/", ""], $this->mainPath), "/")], ["/", "", "", ""], $path), "/");
 	}
 
 	public function run(){
-		try{
-			//Load removed dependencies, can't use require_once()
-			foreach($this->loadPaths as $name => $path){
-				if(!class_exists($name, false) and !interface_exists($name, false)){
-					require($path);
-				}
+		//Load removed dependencies, can't use require_once()
+		foreach($this->loadPaths as $name => $path){
+			if(!class_exists($name, false) and !interface_exists($name, false)){
+				require($path);
 			}
-			$this->loader->register(true);
-
-			gc_enable();
-			error_reporting(-1);
-			ini_set('display_errors', '1');
-			ini_set('display_startup_errors', '1');
-
-			set_error_handler([$this, "errorHandler"], E_ALL);
-			register_shutdown_function([$this, "shutdownHandler"]);
-
-			$socket = new UDPServerSocket($this->getLogger(), $this->port, $this->interface);
-			new SessionManager($this, $socket);
-		}catch(\Throwable $e){
-			$this->logger->logException($e);
 		}
+		$this->loader->register(true);
+
+		gc_enable();
+		error_reporting(-1);
+		ini_set("display_errors", 1);
+		ini_set("display_startup_errors", 1);
+
+		set_error_handler([$this, "errorHandler"], E_ALL);
+		register_shutdown_function([$this, "shutdownHandler"]);
+
+
+		$socket = new UDPServerSocket($this->getLogger(), $this->port, $this->interface);
+		new SessionManager($this, $socket);
 	}
 
 }
