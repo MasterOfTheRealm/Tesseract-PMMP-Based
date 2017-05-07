@@ -25,16 +25,12 @@ use pocketmine\block\Block;
 use pocketmine\block\Leaves2;
 use pocketmine\block\Wood2;
 
-class AcaciaTree extends Tree{
+class DarkOakTree extends Tree{
 	public function __construct(){
 		$this->trunkBlock = Block::WOOD2;
 		$this->leafBlock = Block::LEAVES2;
-		$this->leafType = Leaves2::ACACIA;
-		$this->type = Wood2::ACACIA;
+		$this->leafType = Leaves2::DARK_OAK;
+		$this->type = Wood2::DARK_OAK;
 		$this->treeHeight = 8;
 	}
-
-	/*public function placeObject(ChunkManager $level, $x, $y, $z, Random $random){
-	}*/
-	//TODO: rewrite
 }
