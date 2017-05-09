@@ -613,6 +613,12 @@ class Server{
 	/**
 	 * @return \ClassLoader
 	 */
+	public  function  getInventorySlots() {
+		return $this->getConfigInt("Inventory-slots", 36);
+	}
+	/**
+	 * @return int
+	 */
 	public function getLoader(){
 		return $this->autoloader;
 	}
@@ -1581,6 +1587,7 @@ class Server{
 				"rcon.password" => substr(base64_encode(random_bytes(20)), 3, 10),
 				"auto-save" => true,
 				"online-mode" => false,
+				"inventory-slots" => 36,
 			]);
 			
 			$version = $this->getFormattedVersion();
@@ -1868,6 +1875,7 @@ class Server{
 		return $this->getConfigBoolean("online-mode", false);
 
 	}
+
 	
 	public function isExtensionInstalled($type){
 		switch($type){
