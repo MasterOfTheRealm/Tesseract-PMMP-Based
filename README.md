@@ -31,7 +31,7 @@ __[Third Party Libraries and Protocols Used](#ThirdpartyLibrariesProtocolsUsed)_
 ## Installation
 
 **Self-installation:**<br>
-Supported platforms: Linux, Windows, OS X, Raspberry Pi, and ODROID <br>
+Supported platforms: Linux, Windows, OS X, Raspberry Pi, and Android. <br>
 [Installation](https://github.com/TesseractTeam/Tesseract/wiki/Installation)<br>
 
 __[Back to QuickLinks](#quick-links-instead-of-scrolling-click-these)__
