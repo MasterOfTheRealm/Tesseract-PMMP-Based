@@ -611,13 +611,14 @@ class Server{
 	}
 
 	/**
-	 * @return \ClassLoader
+	 * @return int
 	 */
 	public  function  getInventorySlots() {
 		return $this->getConfigInt("Inventory-slots", 36);
 	}
+
 	/**
-	 * @return int
+	 * @return \ClassLoader
 	 */
 	public function getLoader(){
 		return $this->autoloader;
