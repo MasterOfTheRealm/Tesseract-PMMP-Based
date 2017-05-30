@@ -74,9 +74,9 @@ namespace pocketmine {
     use pocketmine\utils\Utils;
     use pocketmine\wizard\Installer;
 
-    const VERSION = "1.2.1";
-    const API_VERSION = "3.0.1";
-    const CODENAME = "Opal";
+    const VERSION = "1.3.0";
+    const API_VERSION = "3.0.2";
+    const CODENAME = "Unity";
 
     /*
      * Startup code. Do not look at it, it may harm you.
