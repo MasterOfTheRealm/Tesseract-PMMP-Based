@@ -58,37 +58,26 @@ class EnchantCommand extends VanillaCommand {
             return true;
         }
 
-        $enchantId = $args[1];
-        $enchantLevel = isset($args[2]) ? (int)$args[2] : 1;
-
-        $enchantment = Enchantment::getEnchantment($enchantId);
-        if ($enchantment->getId() === Enchantment::TYPE_INVALID) {
-            $enchantment = Enchantment::getEnchantmentByName($enchantId);
-            if ($enchantment->getId() === Enchantment::TYPE_INVALID) {
-                $sender->sendMessage(new TranslationContainer("commands.enchant.notFound", [$enchantment->getId()]));
-                return true;
-            }
-        }
-        $id = $enchantment->getId();
-        $maxLevel = Enchantment::getEnchantMaxLevel($id);
-        if ($enchantLevel > $maxLevel or $enchantLevel <= 0) {
-            $sender->sendMessage(new TranslationContainer("commands.enchant.maxLevel", [$maxLevel]));
-            return true;
-        }
-        $enchantment->setLevel($enchantLevel);
-
         $item = $player->getInventory()->getItemInHand();
 
-        if ($item->getId() <= 0) {
+        if($item->getId() <= 0){
             $sender->sendMessage(new TranslationContainer("commands.enchant.noItem"));
             return true;
         }
 
-        if (Enchantment::getEnchantAbility($item) === 0) {
-            $sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.enchant.cantEnchant"));
+        if(is_numeric($args[1])){
+            $enchantment = Enchantment::getEnchantment((int) $args[1]);
+        }else{
+            $enchantment = Enchantment::getEnchantmentByName($args[1]);
+        }
+
+        if(!($enchantment instanceof Enchantment)){
+            $sender->sendMessage(new TranslationContainer("commands.enchant.notFound", [$args[1]]));
             return true;
         }
 
+        $enchantment->setLevel((int) ($args[2] ?? 1));
+        
         $item->addEnchantment($enchantment);
         $player->getInventory()->setItemInHand($item);
 

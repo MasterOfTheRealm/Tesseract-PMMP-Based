@@ -107,7 +107,7 @@ class EnchantInventory extends TemporaryInventory {
 
                         for ($j = 0; $j < count($possible); $j++) {
                             $id = $possible[$j]->getId();
-                            $weight = Enchantment::getEnchantWeight($id);
+                            $weight = Enchantment::rarityFromString($id);
                             $weights[$j] = $weight;
                             $total += $weight;
                         }
@@ -166,7 +166,7 @@ class EnchantInventory extends TemporaryInventory {
                             }
                         }
 
-                        $this->entries[$i] = new EnchantmentEntry($result, $level, Enchantment::getRandomName());
+                        //$this->entries[$i] = new EnchantmentEntry($result, $level, Enchantment::getRandomName());
                     }
 
                     $this->sendEnchantmentList();
@@ -286,7 +286,7 @@ class EnchantInventory extends TemporaryInventory {
                     continue;
                 }
 
-                if (($id === Enchantment::TYPE_MINING_SILK_TOUCH and $enchantment->getId() === Enchantment::TYPE_MINING_FORTUNE) or ($id === Enchantment::TYPE_MINING_FORTUNE and $enchantment->getId() === Enchantment::TYPE_MINING_SILK_TOUCH)) {
+                if (($id === Enchantment::SILK_TOUCH and $enchantment->getId() === Enchantment::FORTUNE) or ($id === Enchantment::FORTUNE and $enchantment->getId() === Enchantment::SILK_TOUCH)) {
                     //Protection
                     unset($enchantments[$id]);
                     continue;
