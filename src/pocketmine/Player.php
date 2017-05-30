@@ -131,6 +131,7 @@ use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\PlayerActionPacket;
 use pocketmine\network\protocol\PlayStatusPacket;
 use pocketmine\network\protocol\ResourcePacksInfoPacket;
+use pocketmine\network\protocol\ResourcePackStackPacket;
 use pocketmine\network\protocol\RespawnPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetSpawnPositionPacket;
@@ -2100,7 +2101,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $pk->status = PlayStatusPacket::LOGIN_SUCCESS;
                 $this->directDataPacket($pk);
 
+                //TODO: Add resource packs.
                 $this->dataPacket(new ResourcePacksInfoPacket());
+                $this->dataPacket(new ResourcePackStackPacket());
 
                 if ($this->isConnected()) {
                     $this->onPlayerPreLogin();
