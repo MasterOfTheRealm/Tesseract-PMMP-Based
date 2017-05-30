@@ -17,14 +17,14 @@ groups:
   Owner:
     required: 1
     users:
-    - LinuxLogo
+    - jrodr10
     teams:
     - owners
       
   Software:
       required: 1
       users:
-      - LinuxLogo
+      - jrodr10
       - AppleDevelops
       teams:
       - software
