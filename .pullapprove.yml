@@ -14,16 +14,17 @@ group_defaults:
     
 groups:
 
-  Owners:
+  Owner:
     required: 1
     users:
-    - AppleDevelops
+    - LinuxLogo
     teams:
     - owners
       
   Software:
-      required: 2
+      required: 1
       users:
+      - LinuxLogo
       - AppleDevelops
       teams:
       - software
