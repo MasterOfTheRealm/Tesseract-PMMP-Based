@@ -69,7 +69,7 @@ class Zombie extends Monster {
         $cause = $this->lastDamageCause;
         $drops = [];
         if ($cause instanceof EntityDamageByEntityEvent and $cause->getDamager() instanceof Player) {
-            $lootingL = $cause->getDamager()->getItemInHand()->getEnchantmentLevel(Enchantment::TYPE_WEAPON_LOOTING);
+            $lootingL = $cause->getDamager()->getItemInHand()->getEnchantmentLevel(Enchantment::LOOTING);
             if (mt_rand(0, 199) < (5 + 2 * $lootingL)) {
                 switch (mt_rand(0, 3)) {
                     case 0:

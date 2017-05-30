@@ -32,6 +32,7 @@ class Glass extends Transparent{
 
 	}
 
+
 	public function getName() : string{
 		return "Glass";
 	}
@@ -41,7 +42,7 @@ class Glass extends Transparent{
 	}
 
 	public function getDrops(Item $item) : array {
-		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
+		if($item->getEnchantmentLevel(Enchantment::SILK_TOUCH) > 0){
 			return [
 				[Item::GLASS, 0, 1],
 			];

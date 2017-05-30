@@ -25,6 +25,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\IPlayer;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\Server;
 
 class PlayerDataSaveEvent extends Event implements Cancellable{
     public static $handlerList = null;

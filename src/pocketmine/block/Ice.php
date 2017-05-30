@@ -46,14 +46,14 @@ class Ice extends Transparent{
 	}
 
 	public function onBreak(Item $item){
-		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) === 0){
+		if($item->getEnchantmentLevel(Enchantment::SILK_TOUCH) === 0){
 			$this->getLevel()->setBlock($this, new Water(), true);
 		}
 		return true;
 	}
 
 	public function getDrops(Item $item) : array {
-		if($item->getEnchantmentLevel(Enchantment::TYPE_MINING_SILK_TOUCH) > 0){
+		if($item->getEnchantmentLevel(Enchantment::SILK_TOUCH) > 0){
 			return [
 				[Item::ICE, 0, 1],
 			];

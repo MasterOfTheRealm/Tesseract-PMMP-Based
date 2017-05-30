@@ -46,6 +46,7 @@ use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\event\inventory\InventoryCloseEvent;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
+use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerTextPreSendEvent;
 use pocketmine\event\player\PlayerAchievementAwardedEvent;
@@ -2681,13 +2682,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         }
                     }
 
-                    $ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage, 0.4 + $item->getEnchantmentLevel(Enchantment::TYPE_WEAPON_KNOCKBACK) * 0.15);
+                    $ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $damage, 0.4 + $item->getEnchantmentLevel(Enchantment::KNOCKBACK) * 0.15);
                     if ($cancelled) {
                         $ev->setCancelled();
                     }
 
                     if ($target->attack($ev->getFinalDamage(), $ev) === true) {
-                        $fireAspectL = $item->getEnchantmentLevel(Enchantment::TYPE_WEAPON_FIRE_ASPECT);
+                        $fireAspectL = $item->getEnchantmentLevel(Enchantment::FIRE_ASPECT);
                         if ($fireAspectL > 0) {
                             $fireEv = new EntityCombustByEntityEvent($this, $target, $fireAspectL * 4, $ev->getFireProtectL());
                             Server::getInstance()->getPluginManager()->callEvent($fireEv);
@@ -3474,15 +3475,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->directDataPacket($pk);
             }
 
-            //$this->setLinked();
-
-            if ($this->fishingHook instanceof FishingHook) {
-                $this->fishingHook->close();
-                $this->fishingHook = null;
-            }
-
-            $this->removeEffect(Effect::HEALTH_BOOST);
-
             $this->connected = false;
 
             foreach ($this->server->getOnlinePlayers() as $player) {
@@ -3513,13 +3505,12 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
             if (strlen($this->getName()) > 0) {
                 $this->server->getPluginManager()->callEvent($ev = new PlayerQuitEvent($this, $message, true));
-                if ($this->loggedIn === true and $ev->getAutoSave()) {
-                    $this->save();
-                }
 
                 if ($this->spawned !== false and $ev->getQuitMessage() != "") {
                     $this->server->broadcastMessage($ev->getQuitMessage());
                 }
+
+                $this->save();
             }
 
             parent::close();
