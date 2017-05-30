@@ -26,67 +26,67 @@ use pocketmine\level\generator\normal\populator\DeadBush;
 use pocketmine\level\generator\normal\populator\Mushroom;
 use pocketmine\level\generator\normal\populator\SugarCane;
 
-class DesertBiome extends SandyBiome{
+class DesertBiome extends SandyBiome {
 
-	public function __construct(){
-		$deadBush = new DeadBush();
-		$deadBush->setBaseAmount(1);
-		$deadBush->setRandomAmount(4);
+    public function __construct() {
+        $deadBush = new DeadBush();
+        $deadBush->setBaseAmount(1);
+        $deadBush->setRandomAmount(4);
 
-		$sugarCane = new SugarCane();
-		$sugarCane->setRandomAmount(20);
-		$sugarCane->setBaseAmount(3);
+        $sugarCane = new SugarCane();
+        $sugarCane->setRandomAmount(20);
+        $sugarCane->setBaseAmount(3);
 
-		$mushroom = new Mushroom();
+        $mushroom = new Mushroom();
 
-		$this->addPopulator($mushroom);
-		$this->addPopulator($deadBush);
-		$this->addPopulator($sugarCane);
-		
-		$this->setElevation(63, 74);
+        $this->addPopulator($mushroom);
+        $this->addPopulator($deadBush);
+        $this->addPopulator($sugarCane);
 
-		$this->temperature = 2;
-		$this->rainfall = 0;
-		$this->setGroundCover([
-			Block::get(Block::SAND, 0),
-			Block::get(Block::SAND, 0),
-			Block::get(Block::SAND, 0),
-			Block::get(Block::SAND, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-			Block::get(Block::SANDSTONE, 0),
-		]);
-	}
+        $this->setElevation(63, 74);
 
-	public function getName() : string{
-		return "Desert";
-	}
+        $this->temperature = 2;
+        $this->rainfall = 0;
+        $this->setGroundCover([
+            Block::get(Block::SAND, 0),
+            Block::get(Block::SAND, 0),
+            Block::get(Block::SAND, 0),
+            Block::get(Block::SAND, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+            Block::get(Block::SANDSTONE, 0),
+        ]);
+    }
+
+    public function getName(): string {
+        return "Desert";
+    }
 }

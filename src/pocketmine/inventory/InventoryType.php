@@ -21,97 +21,95 @@
 
 namespace pocketmine\inventory;
 
-
-
-use pocketmine\Server;
 /**
  * Saves all the information regarding default inventory sizes and types
  */
-class InventoryType{
-	const CHEST = 0;
-	const DOUBLE_CHEST = 1;
-	const PLAYER = 2;
-	const FURNACE = 3;
-	const CRAFTING = 4;
-	const WORKBENCH = 5;
-	//const STONECUTTER = 6;
-	const BREWING_STAND = 7;
-	const ANVIL = 8;
-	const ENCHANT_TABLE = 9;
-	const DISPENSER = 10;
-	const DROPPER = 11;
-	const HOPPER = 12;
-	const ENDER_CHEST = 13;
-	const BEACON = 14;
+class InventoryType {
+    const CHEST = 0;
+    const DOUBLE_CHEST = 1;
+    const PLAYER = 2;
+    const FURNACE = 3;
+    const CRAFTING = 4;
+    const WORKBENCH = 5;
+    //const STONECUTTER = 6;
+    const BREWING_STAND = 7;
+    const ANVIL = 8;
+    const ENCHANT_TABLE = 9;
+    const DISPENSER = 10;
+    const DROPPER = 11;
+    const HOPPER = 12;
+    const ENDER_CHEST = 13;
+    const BEACON = 14;
 
-	const PLAYER_FLOATING = 254;
+    const PLAYER_FLOATING = 254;
 
-	private static $default = [];
+    private static $default = [];
 
-	private $size;
-	private $title;
-	private $typeId;
+    private $size;
+    private $title;
+    private $typeId;
 
-	/**
-	 * @param $index
-	 *
-	 * @return InventoryType
-	 */
-	public static function get($index){
-		return isset(static::$default[$index]) ? static::$default[$index] : null;
-	}
+    /**
+     * @param $index
+     *
+     * @return InventoryType
+     */
+    public static function get($index) {
+        return isset(static::$default[$index]) ? static::$default[$index] : null;
+    }
 
-	public static function init(){
-		if(count(static::$default) > 0){
-			return;
-		}
-		static::$default[static::CHEST] = new InventoryType(27, "Chest", 0);
-		static::$default[static::DOUBLE_CHEST] = new InventoryType(27 + 27, "Double Chest", 0);
-		static::$default[static::PLAYER] = new InventoryType(Server::getInstance()->getInventorySlots() + 4, "Player", 0); //36 CONTAINER, 4 ARMOR
-		static::$default[static::FURNACE] = new InventoryType(3, "Furnace", 2);
-		static::$default[static::CRAFTING] = new InventoryType(5, "Crafting", 1); //4 CRAFTING slots, 1 RESULT
-		static::$default[static::WORKBENCH] = new InventoryType(10, "Crafting", 1); //9 CRAFTING slots, 1 RESULT
-		static::$default[static::ENCHANT_TABLE] = new InventoryType(2, "Enchant", 3); //1 INPUT/OUTPUT, 1 LAPIS
-		static::$default[static::BREWING_STAND] = new InventoryType(4, "Brewing", 4); //1 INPUT, 3 POTION
-		static::$default[static::ANVIL] = new InventoryType(3, "Anvil", 5); //2 INPUT, 1 OUTPUT
-		static::$default[static::DISPENSER] = new InventoryType(9, "Dispenser", 6); //9 CONTAINER
-		static::$default[static::DROPPER] = new InventoryType(9, "Dropper", 7); //9 CONTAINER
-		static::$default[static::HOPPER] = new InventoryType(5, "Hopper", 8); //5 CONTAINER
-		static::$default[static::ENDER_CHEST] = new InventoryType(27, "Ender Chest", 0);
-		static::$default[static::BEACON] = new InventoryType(0, "Beacon", 13);
+    public static function init() {
+        if (count(static::$default) > 0) {
+            return;
+        }
 
-		static::$default[static::PLAYER_FLOATING] = new InventoryType(36, "Floating", null); //Mirror all slots of main inventory (needed for large item pickups)
-	}
+        static::$default[static::CHEST] = new InventoryType(27, "Chest", 0);
+        static::$default[static::DOUBLE_CHEST] = new InventoryType(27 + 27, "Double Chest", 0);
+        static::$default[static::PLAYER] = new InventoryType(36 + 4, "Player", 0); //36 CONTAINER, 4 ARMOR
+        static::$default[static::FURNACE] = new InventoryType(3, "Furnace", 2);
+        static::$default[static::CRAFTING] = new InventoryType(5, "Crafting", 1); //4 CRAFTING slots, 1 RESULT
+        static::$default[static::WORKBENCH] = new InventoryType(10, "Crafting", 1); //9 CRAFTING slots, 1 RESULT
+        static::$default[static::ENCHANT_TABLE] = new InventoryType(2, "Enchant", 3); //1 INPUT/OUTPUT, 1 LAPIS
+        static::$default[static::BREWING_STAND] = new InventoryType(4, "Brewing", 4); //1 INPUT, 3 POTION
+        static::$default[static::ANVIL] = new InventoryType(3, "Anvil", 5); //2 INPUT, 1 OUTPUT
+        static::$default[static::DISPENSER] = new InventoryType(9, "Dispenser", 6); //9 CONTAINER
+        static::$default[static::DROPPER] = new InventoryType(9, "Dropper", 7); //9 CONTAINER
+        static::$default[static::HOPPER] = new InventoryType(5, "Hopper", 8); //5 CONTAINER
+        static::$default[static::ENDER_CHEST] = new InventoryType(27, "Ender Chest", 0);
+        static::$default[static::BEACON] = new InventoryType(0, "Beacon", 13);
 
-	/**
-	 * @param int    $defaultSize
-	 * @param string $defaultTitle
-	 * @param int    $typeId
-	 */
-	private function __construct($defaultSize, $defaultTitle, $typeId = 0){
-		$this->size = $defaultSize;
-		$this->title = $defaultTitle;
-		$this->typeId = $typeId;
-	}
+        static::$default[static::PLAYER_FLOATING] = new InventoryType(36, "Floating", null); //Mirror all slots of main inventory (needed for large item pickups)
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getDefaultSize(){
-		return $this->size;
-	}
+    /**
+     * @param int $defaultSize
+     * @param string $defaultTitle
+     * @param int $typeId
+     */
+    private function __construct($defaultSize, $defaultTitle, $typeId = 0) {
+        $this->size = $defaultSize;
+        $this->title = $defaultTitle;
+        $this->typeId = $typeId;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getDefaultTitle(){
-		return $this->title;
-	}
+    /**
+     * @return int
+     */
+    public function getDefaultSize() {
+        return $this->size;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getNetworkType(){
-		return $this->typeId;
-	}
+    /**
+     * @return string
+     */
+    public function getDefaultTitle() {
+        return $this->title;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNetworkType() {
+        return $this->typeId;
+    }
 }

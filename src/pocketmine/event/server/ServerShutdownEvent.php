@@ -17,21 +17,14 @@
  *
  *
  */
- 
+
 namespace pocketmine\event\server;
 
 
 use pocketmine\event\Cancellable;
 
-class ServerShutdownEvent extends ServerEvent implements Cancellable{
+class ServerShutdownEvent extends ServerEvent implements Cancellable {
 
-	public static $handlerList = null;
-
-	/**
-	 * @return EventName|string
-     */
-	public function getName(){
-		return "ServerShutdownEvent";
-	}
+    public static $handlerList = null;
 
 }

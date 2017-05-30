@@ -26,15 +26,8 @@ use pocketmine\event\Cancellable;
 /**
  * Called when a Level is unloaded
  */
-class LevelUnloadEvent extends LevelEvent implements Cancellable{
+class LevelUnloadEvent extends LevelEvent implements Cancellable {
 
-	public static $handlerList = null;
-
-	/**
-	 * @return EventName|string
-     */
-	public function getName(){
-		return "LevelUnloadEvent";
-	}
+    public static $handlerList = null;
 
 }

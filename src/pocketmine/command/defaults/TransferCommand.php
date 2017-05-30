@@ -25,7 +25,9 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\network\protocol\TransferPacket;
 use pocketmine\command\CommandSender;
-use pocketmine\{Player, Server};
+use pocketmine\{
+    event\TranslationContainer, Player, Server
+};
 
 class TransferCommand extends VanillaCommand{
 	
@@ -49,7 +51,7 @@ class TransferCommand extends VanillaCommand{
 			}
 
 			if(count($args) <= 0){
-				$sender->sendMessage("Usage: /transferserver <address> [port]");
+				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 				return false;
 			}
 
@@ -62,7 +64,7 @@ class TransferCommand extends VanillaCommand{
 		}
 
 		if(count($args) <= 1){
-			$sender->sendMessage("Usage: /transferserver <player> <address> [port]");
+			$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 			return false;
 		}
 

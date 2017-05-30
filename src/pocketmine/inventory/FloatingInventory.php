@@ -24,13 +24,13 @@ namespace pocketmine\inventory;
 /**
  * The in-between inventory where items involved in transactions are stored temporarily
  */
-class FloatingInventory extends BaseInventory{
+class FloatingInventory extends BaseInventory {
 
     /**
      * @param InventoryHolder $holder
      * @internal param InventoryType $inventoryType
      */
-	public function __construct(InventoryHolder $holder){
-		parent::__construct($holder, InventoryType::get(InventoryType::PLAYER_FLOATING));
-	}
+    public function __construct(InventoryHolder $holder) {
+        parent::__construct($holder, InventoryType::get(InventoryType::PLAYER_FLOATING));
+    }
 }

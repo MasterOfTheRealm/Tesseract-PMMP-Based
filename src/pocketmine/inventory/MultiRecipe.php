@@ -23,12 +23,12 @@ namespace pocketmine\inventory;
 
 use pocketmine\utils\UUID;
 
-class MultiRecipe{
+class MultiRecipe {
 
-	private $uuid;
+    private $uuid;
 
-	public function __construct(UUID $uuid){
-		$this->uuid = $uuid;
-	}
+    public function __construct(UUID $uuid) {
+        $this->uuid = $uuid;
+    }
 
 }

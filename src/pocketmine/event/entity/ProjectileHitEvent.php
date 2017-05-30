@@ -23,30 +23,22 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Projectile;
 
-class ProjectileHitEvent extends EntityEvent{
+class ProjectileHitEvent extends EntityEvent {
 
-	public static $handlerList = null;
+    public static $handlerList = null;
 
-	/**
-	 * @param Projectile $entity
-	 */
-	public function __construct(Projectile $entity){
-		$this->entity = $entity;
-
-	}
-
-	/**
-	 * @return Projectile
-	 */
-	public function getEntity(){
-		return $this->entity;
-	}
-
-	/**
-	 * @return EventName|string
+    /**
+     * @param Projectile $entity
      */
-	public function getName(){
-		return "ProjectileHitEvent";
-	}
+    public function __construct(Projectile $entity) {
+        $this->entity = $entity;
 
+    }
+
+    /**
+     * @return Projectile
+     */
+    public function getEntity() {
+        return $this->entity;
+    }
 }

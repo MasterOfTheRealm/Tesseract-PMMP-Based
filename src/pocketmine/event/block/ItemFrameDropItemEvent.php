@@ -8,50 +8,42 @@ use pocketmine\item\Item;
 use pocketmine\Player;
 use pocketmine\tile\ItemFrame;
 
-class ItemFrameDropItemEvent extends BlockEvent implements Cancellable{
-	
-	public static $handlerList = null;
+class ItemFrameDropItemEvent extends BlockEvent implements Cancellable {
 
-	/** @var  Player */
-	private $player;
-	
-	/** @var  Item */
-	private $item;
-	
-	/** @var  ItemFrame */
-	private $itemFrame;
-	
-	/** @var  Block */
-	protected $block;
+    public static $handlerList = null;
 
-	public function __construct(Player $player, Block $block, ItemFrame $itemFrame, Item $item){
-		$this->player = $player;
-		$this->block = $block;
-		$this->itemFrame = $itemFrame;
-		$this->item = $item;
-	}
+    /** @var  Player */
+    private $player;
 
-	public function getPlayer(){
-		return $this->player;
-	}
+    /** @var  Item */
+    private $item;
 
-	public function getItemFrame(){
-		return $this->itemFrame;
-	}
+    /** @var  ItemFrame */
+    private $itemFrame;
 
-	public function getItem(){
-		return $this->item;
-	}
-	
-	public function getBlock(){
-		return $this->block;
-	}
+    /** @var  Block */
+    protected $block;
 
-	/**
-	 * @return EventName|string
-     */
-	public function getName(){
-		return "ItemFrameDropItemEvent";
-	}
+    public function __construct(Player $player, Block $block, ItemFrame $itemFrame, Item $item) {
+        $this->player = $player;
+        $this->block = $block;
+        $this->itemFrame = $itemFrame;
+        $this->item = $item;
+    }
 
+    public function getPlayer() {
+        return $this->player;
+    }
+
+    public function getItemFrame() {
+        return $this->itemFrame;
+    }
+
+    public function getItem() {
+        return $this->item;
+    }
+
+    public function getBlock() {
+        return $this->block;
+    }
 }

@@ -21,10 +21,12 @@
  *
  */
  
- namespace pocketmine\command\defaults;
+namespace pocketmine\command\defaults;
  
+use pocketmine\event\TranslationContainer;
 use pocketmine\network\protocol\SetTitlePacket;
 use pocketmine\command\CommandSender;
+use pocketmine\Player;
 
 class TitleCommand extends VanillaCommand {
 
@@ -43,7 +45,7 @@ class TitleCommand extends VanillaCommand {
 				return true;
 			}
 			if(count($args) <= 0){
-				$sender->sendMessage("Usage: /title <title> <subtile> [text]");
+				$sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
 				return false;
 			}
         }

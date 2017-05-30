@@ -22,57 +22,59 @@
 namespace pocketmine\tile;
 
 use pocketmine\level\Level;
-use pocketmine\nbt\tag\{ByteTag, CompoundTag, IntTag, StringTag};
+use pocketmine\nbt\tag\{
+    ByteTag, CompoundTag, IntTag, StringTag
+};
 
-class Skull extends Spawnable{
+class Skull extends Spawnable {
 
-	const TYPE_SKELETON = 0;
-	const TYPE_WITHER = 1;
-	const TYPE_ZOMBIE = 2;
-	const TYPE_HUMAN = 3;
-	const TYPE_CREEPER = 4;
-	const TYPE_DRAGON = 5;
+    const TYPE_SKELETON = 0;
+    const TYPE_WITHER = 1;
+    const TYPE_ZOMBIE = 2;
+    const TYPE_HUMAN = 3;
+    const TYPE_CREEPER = 4;
+    const TYPE_DRAGON = 5;
 
-	public function __construct(Level $level, CompoundTag $nbt){
-		if(!isset($nbt->SkullType)){
-			$nbt->SkullType = new ByteTag("SkullType", 0);
-		}
-		if(!isset($nbt->Rot) or !($nbt->Rot instanceof ByteTag)) {
-			$nbt->Rot = new ByteTag("Rot", 0);
-		}
-		if(!isset($nbt->MouthMoving)){
-            $nbt->MouthMoving = new ByteTag("MouthMoving", (bool) false);
-		}
-		parent::__construct($level, $nbt);
-	}
+    public function __construct(Level $level, CompoundTag $nbt) {
+        if (!isset($nbt->SkullType)) {
+            $nbt->SkullType = new ByteTag("SkullType", 0);
+        }
+        if (!isset($nbt->Rot) or !($nbt->Rot instanceof ByteTag)) {
+            $nbt->Rot = new ByteTag("Rot", 0);
+        }
+        if (!isset($nbt->MouthMoving)) {
+            $nbt->MouthMoving = new ByteTag("MouthMoving", (bool)false);
+        }
+        parent::__construct($level, $nbt);
+    }
 
-	public function setType(int $type){
-		if($type >= 0 && $type <= 4){
-			$this->namedtag->SkullType = new ByteTag("SkullType", $type);
-			$this->onChanged();
-			return true;
-		}
-		return false;
-	}
+    public function setType(int $type) {
+        if ($type >= 0 && $type <= 4) {
+            $this->namedtag->SkullType = new ByteTag("SkullType", $type);
+            $this->onChanged();
+            return true;
+        }
+        return false;
+    }
 
-	public function getType() {
-		return $this->namedtag["SkullType"];
-	}
+    public function getType() {
+        return $this->namedtag["SkullType"];
+    }
 
-	public function saveNBT(){
-		parent::saveNBT();
-		unset($this->namedtag->Creator);
-	}
+    public function saveNBT() {
+        parent::saveNBT();
+        unset($this->namedtag->Creator);
+    }
 
-	public function getSpawnCompound(){
-		return new CompoundTag("", [
-			new StringTag("id", Tile::SKULL),
-			$this->namedtag->SkullType,
-			$this->namedtag->Rot,
-			$this->namedtag->MouthMoving,
-			new IntTag("x", (int)$this->x),
-			new IntTag("y", (int)$this->y),
-			new IntTag("z", (int)$this->z),
-		]);
-	}
+    public function getSpawnCompound() {
+        return new CompoundTag("", [
+            new StringTag("id", Tile::SKULL),
+            $this->namedtag->SkullType,
+            $this->namedtag->Rot,
+            $this->namedtag->MouthMoving,
+            new IntTag("x", (int)$this->x),
+            new IntTag("y", (int)$this->y),
+            new IntTag("z", (int)$this->z),
+        ]);
+    }
 }

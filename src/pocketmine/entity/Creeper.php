@@ -27,61 +27,61 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\network\protocol\AddEntityPacket;
 use pocketmine\Player;
 
-class Creeper extends Monster{
-	const NETWORK_ID = 33;
+class Creeper extends Monster {
+    const NETWORK_ID = 33;
 
-	const DATA_SWELL = 19;
-	const DATA_SWELL_OLD = 20;
-	const DATA_SWELL_DIRECTION = 21;
+    const DATA_SWELL = 19;
+    const DATA_SWELL_OLD = 20;
+    const DATA_SWELL_DIRECTION = 21;
 
-	public $dropExp = [5, 5];
-	
-	public function getName() : string{
-		return "Creeper";
-	}
+    public $dropExp = [5, 5];
 
-	public function initEntity(){
-		parent::initEntity();
+    public function getName(): string {
+        return "Creeper";
+    }
 
-		if(!isset($this->namedtag->powered)){
-			$this->setPowered(false);
-		}
-		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_POWERED, $this->isPowered());
-	}
+    public function initEntity() {
+        parent::initEntity();
 
-	public function setPowered(bool $powered, Lightning $lightning = null){
-		if($lightning != null){
-			$powered = true;
-			$cause = CreeperPowerEvent::CAUSE_LIGHTNING;
-		}else $cause = $powered ? CreeperPowerEvent::CAUSE_SET_ON : CreeperPowerEvent::CAUSE_SET_OFF;
+        if (!isset($this->namedtag->powered)) {
+            $this->setPowered(false);
+        }
+        $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_POWERED, $this->isPowered());
+    }
 
-		$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new CreeperPowerEvent($this, $lightning, $cause));
+    public function setPowered(bool $powered, Lightning $lightning = null) {
+        if ($lightning != null) {
+            $powered = true;
+            $cause = CreeperPowerEvent::CAUSE_LIGHTNING;
+        } else $cause = $powered ? CreeperPowerEvent::CAUSE_SET_ON : CreeperPowerEvent::CAUSE_SET_OFF;
 
-		if(!$ev->isCancelled()){
-			$this->namedtag->powered = new ByteTag("powered", $powered ? 1 : 0);
-			$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_POWERED, $powered);
-		}
-	}
+        $this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new CreeperPowerEvent($this, $lightning, $cause));
 
-	public function isPowered() : bool{
-		return (bool) $this->namedtag["powered"];
-	}
+        if (!$ev->isCancelled()) {
+            $this->namedtag->powered = new ByteTag("powered", $powered ? 1 : 0);
+            $this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_POWERED, $powered);
+        }
+    }
 
-	public function spawnTo(Player $player){
-		$pk = new AddEntityPacket();
-		$pk->eid = $this->getId();
-		$pk->type = Creeper::NETWORK_ID;
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->speedX = $this->motionX;
-		$pk->speedY = $this->motionY;
-		$pk->speedZ = $this->motionZ;
-		$pk->yaw = $this->yaw;
-		$pk->pitch = $this->pitch;
-		$pk->metadata = $this->dataProperties;
-		$player->dataPacket($pk);
+    public function isPowered(): bool {
+        return (bool)$this->namedtag["powered"];
+    }
 
-		parent::spawnTo($player);
-	}
+    public function spawnTo(Player $player) {
+        $pk = new AddEntityPacket();
+        $pk->eid = $this->getId();
+        $pk->type = Creeper::NETWORK_ID;
+        $pk->x = $this->x;
+        $pk->y = $this->y;
+        $pk->z = $this->z;
+        $pk->speedX = $this->motionX;
+        $pk->speedY = $this->motionY;
+        $pk->speedZ = $this->motionZ;
+        $pk->yaw = $this->yaw;
+        $pk->pitch = $this->pitch;
+        $pk->metadata = $this->dataProperties;
+        $player->dataPacket($pk);
+
+        parent::spawnTo($player);
+    }
 }

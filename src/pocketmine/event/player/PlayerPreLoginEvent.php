@@ -27,31 +27,23 @@ use pocketmine\Player;
 /**
  * Called when the player logs in, before things have been set up
  */
-class PlayerPreLoginEvent extends PlayerEvent implements Cancellable{
+class PlayerPreLoginEvent extends PlayerEvent implements Cancellable {
 
-	public static $handlerList = null;
+    public static $handlerList = null;
 
-	/** @var string */
-	protected $kickMessage;
+    /** @var string */
+    protected $kickMessage;
 
-	public function __construct(Player $player, $kickMessage){
-		$this->player = $player;
-		$this->kickMessage = $kickMessage;
-	}
+    public function __construct(Player $player, $kickMessage) {
+        $this->player = $player;
+        $this->kickMessage = $kickMessage;
+    }
 
-	public function setKickMessage($kickMessage){
-		$this->kickMessage = $kickMessage;
-	}
+    public function setKickMessage($kickMessage) {
+        $this->kickMessage = $kickMessage;
+    }
 
-	public function getKickMessage(){
-		return $this->kickMessage;
-	}
-
-	/**
-	 * @return EventName|string
-     */
-	public function getName(){
-		return "PlayerPreLoginEvent";
-	}
-
+    public function getKickMessage() {
+        return $this->kickMessage;
+    }
 }

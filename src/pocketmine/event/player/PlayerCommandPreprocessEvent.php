@@ -32,49 +32,41 @@ use pocketmine\Player;
  *
  * The message contains a slash at the start
  */
-class PlayerCommandPreprocessEvent extends PlayerEvent implements Cancellable{
+class PlayerCommandPreprocessEvent extends PlayerEvent implements Cancellable {
 
-	public static $handlerList = null;
+    public static $handlerList = null;
 
-	/** @var string */
-	protected $message;
+    /** @var string */
+    protected $message;
 
 
-	/**
-	 * @param Player $player
-	 * @param string $message
-	 */
-	public function __construct(Player $player, $message){
-		$this->player = $player;
-		$this->message = $message;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getMessage(){
-		return $this->message;
-	}
-
-	/**
-	 * @param string $message
-	 */
-	public function setMessage($message){
-		$this->message = $message;
-	}
-
-	/**
-	 * @param Player $player
-	 */
-	public function setPlayer(Player $player){
-		$this->player = $player;
-	}
-
-	/**
-	 * @return EventName|string
+    /**
+     * @param Player $player
+     * @param string $message
      */
-	public function getName(){
-		return "PlayerCommandPreprocessEvent";
-	}
+    public function __construct(Player $player, $message) {
+        $this->player = $player;
+        $this->message = $message;
+    }
 
+    /**
+     * @return string
+     */
+    public function getMessage() {
+        return $this->message;
+    }
+
+    /**
+     * @param string $message
+     */
+    public function setMessage($message) {
+        $this->message = $message;
+    }
+
+    /**
+     * @param Player $player
+     */
+    public function setPlayer(Player $player) {
+        $this->player = $player;
+    }
 }

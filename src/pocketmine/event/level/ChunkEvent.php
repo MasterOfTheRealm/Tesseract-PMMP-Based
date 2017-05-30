@@ -22,37 +22,30 @@
 /**
  * Level related events
  */
+
 namespace pocketmine\event\level;
 
 use pocketmine\level\format\Chunk;
 use pocketmine\level\Level;
 
-abstract class ChunkEvent extends LevelEvent{
+abstract class ChunkEvent extends LevelEvent {
 
-	/** @var Chunk */
-	private $chunk;
+    /** @var Chunk */
+    private $chunk;
 
     /**
      * @param Level $level
      * @param Chunk $chunk
      */
-	public function __construct(Level $level, Chunk $chunk){
-		parent::__construct($level);
-		$this->chunk = $chunk;
-	}
+    public function __construct(Level $level, Chunk $chunk) {
+        parent::__construct($level);
+        $this->chunk = $chunk;
+    }
 
-	/**
-	 * @return Chunk
-	 */
-	public function getChunk(){
-		return $this->chunk;
-	}
-
-	/**
-	 * @return EventName|string
+    /**
+     * @return Chunk
      */
-	public function getName(){
-		return "ChunkEvent";
-	}
-
+    public function getChunk() {
+        return $this->chunk;
+    }
 }

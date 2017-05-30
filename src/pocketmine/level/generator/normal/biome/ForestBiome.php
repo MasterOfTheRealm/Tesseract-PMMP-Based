@@ -26,42 +26,42 @@ use pocketmine\level\generator\normal\populator\Mushroom;
 use pocketmine\level\generator\normal\populator\TallGrass;
 use pocketmine\level\generator\normal\populator\Tree;
 
-class ForestBiome extends GrassyBiome{
+class ForestBiome extends GrassyBiome {
 
-	const TYPE_NORMAL = 0;
-	const TYPE_BIRCH = 1;
+    const TYPE_NORMAL = 0;
+    const TYPE_BIRCH = 1;
 
-	public $type;
+    public $type;
 
-	public function __construct($type = self::TYPE_NORMAL){
-		parent::__construct();
+    public function __construct($type = self::TYPE_NORMAL) {
+        parent::__construct();
 
-		$this->type = $type;
+        $this->type = $type;
 
-		$trees = new Tree($type === self::TYPE_BIRCH ? Sapling::BIRCH : Sapling::OAK);
-		$trees->setBaseAmount(5);
-		$this->addPopulator($trees);
+        $trees = new Tree($type === self::TYPE_BIRCH ? Sapling::BIRCH : Sapling::OAK);
+        $trees->setBaseAmount(5);
+        $this->addPopulator($trees);
 
-		$tallGrass = new TallGrass();
-		$tallGrass->setBaseAmount(3);
+        $tallGrass = new TallGrass();
+        $tallGrass->setBaseAmount(3);
 
-		$this->addPopulator($tallGrass);
-		
-		$mushroom = new Mushroom();
-		$this->addPopulator($mushroom);
+        $this->addPopulator($tallGrass);
 
-		$this->setElevation(63, 81);
+        $mushroom = new Mushroom();
+        $this->addPopulator($mushroom);
 
-		if($type === self::TYPE_BIRCH){
-			$this->temperature = 0.5;
-			$this->rainfall = 0.5;
-		}else{
-			$this->temperature = 0.7;
-			$this->temperature = 0.8;
-		}
-	}
+        $this->setElevation(63, 81);
 
-	public function getName() : string{
-		return $this->type === self::TYPE_BIRCH ? "Birch Forest" : "Forest";
-	}
+        if ($type === self::TYPE_BIRCH) {
+            $this->temperature = 0.5;
+            $this->rainfall = 0.5;
+        } else {
+            $this->temperature = 0.7;
+            $this->temperature = 0.8;
+        }
+    }
+
+    public function getName(): string {
+        return $this->type === self::TYPE_BIRCH ? "Birch Forest" : "Forest";
+    }
 }

@@ -25,26 +25,18 @@ use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\Player;
 
-class PlayerBedEnterEvent extends PlayerEvent implements Cancellable{
+class PlayerBedEnterEvent extends PlayerEvent implements Cancellable {
 
-	public static $handlerList = null;
+    public static $handlerList = null;
 
-	private $bed;
+    private $bed;
 
-	public function __construct(Player $player, Block $bed){
-		$this->player = $player;
-		$this->bed = $bed;
-	}
+    public function __construct(Player $player, Block $bed) {
+        $this->player = $player;
+        $this->bed = $bed;
+    }
 
-	public function getBed(){
-		return $this->bed;
-	}
-
-	/**
-	 * @return EventName|string
-     */
-	public function getName(){
-		return "PlayerBedEnterEvent";
-	}
-
+    public function getBed() {
+        return $this->bed;
+    }
 }

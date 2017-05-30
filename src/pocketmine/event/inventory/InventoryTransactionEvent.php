@@ -26,44 +26,35 @@ use pocketmine\event\Event;
 use pocketmine\inventory\TransactionQueue;
 
 /**
- * Called when an inventory transaction queue starts execution. 
+ * Called when an inventory transaction queue starts execution.
  */
+class InventoryTransactionEvent extends Event implements Cancellable {
 
-class InventoryTransactionEvent extends Event implements Cancellable{
+    public static $handlerList = null;
 
-	public static $handlerList = null;
-	
-	/** @var TransactionQueue */
-	private $transactionQueue;
+    /** @var TransactionQueue */
+    private $transactionQueue;
 
     /**
      * @param TransactionQueue $transactionQueue
      * @internal param TransactionQueue $ts
      */
-	public function __construct(TransactionQueue $transactionQueue){
-		$this->transactionQueue = $transactionQueue;
-	}
+    public function __construct(TransactionQueue $transactionQueue) {
+        $this->transactionQueue = $transactionQueue;
+    }
 
-	/**
-	 * @deprecated
-	 * @return TransactionQueue
-	 */
-	public function getTransaction(){
-		return $this->transactionQueue;
-	}
-
-	/**
-	 * @return TransactionQueue
-	 */
-	public function getQueue(){
-		return $this->transactionQueue;
-	}
-
-	/**
-	 * @return EventName|string
+    /**
+     * @deprecated
+     * @return TransactionQueue
      */
-	public function getName(){
-		return "InventoryTransactionEvent";
-	}
+    public function getTransaction() {
+        return $this->transactionQueue;
+    }
 
+    /**
+     * @return TransactionQueue
+     */
+    public function getQueue() {
+        return $this->transactionQueue;
+    }
 }

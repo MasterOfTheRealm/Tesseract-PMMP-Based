@@ -29,43 +29,35 @@ use pocketmine\Player;
 /**
  * Called when a player uses the fishing rod
  */
-class PlayerFishEvent extends PlayerEvent implements Cancellable{
+class PlayerFishEvent extends PlayerEvent implements Cancellable {
 
-	public static $handlerList = null;
+    public static $handlerList = null;
 
-	/** @var Item */
-	private $item;
+    /** @var Item */
+    private $item;
 
-	/** @var FishingHook */
-	private $hook;
+    /** @var FishingHook */
+    private $hook;
 
-	/**
-	 * @param Player $player
-	 * @param Item   $item
-	 * @param        $fishingHook
-	 */
-	public function __construct(Player $player, Item $item, $fishingHook = null){
-		$this->player = $player;
-		$this->item = $item;
-		$this->hook = $fishingHook;
-	}
-
-	/**
-	 * @return Item
-	 */
-	public function getItem(){
-		return clone $this->item;
-	}
-
-	public function getHook(){
-		return $this->hook;
-	}
-
-	/**
-	 * @return EventName|string
+    /**
+     * @param Player $player
+     * @param Item $item
+     * @param        $fishingHook
      */
-	public function getName(){
-		return "PlayerFishEvent";
-	}
+    public function __construct(Player $player, Item $item, $fishingHook = null) {
+        $this->player = $player;
+        $this->item = $item;
+        $this->hook = $fishingHook;
+    }
 
+    /**
+     * @return Item
+     */
+    public function getItem() {
+        return clone $this->item;
+    }
+
+    public function getHook() {
+        return $this->hook;
+    }
 }

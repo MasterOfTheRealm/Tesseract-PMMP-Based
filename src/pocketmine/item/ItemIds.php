@@ -23,8 +23,8 @@ namespace pocketmine\item;
 
 use pocketmine\block\BlockIds;
 
-interface ItemIds extends BlockIds{
-	
+interface ItemIds extends BlockIds {
+
 	//All BlockIds are also accessible through this interface.
 	const IRON_SHOVEL = 256;
 	const IRON_PICKAXE = 257;
@@ -96,7 +96,6 @@ interface ItemIds extends BlockIds{
 	const SIGN = 323;
 	const WOODEN_DOOR = 324; const OAK_DOOR = 324;
 	const BUCKET = 325;
-
 	const MINECART = 328;
 	const SADDLE = 329;
 	const IRON_DOOR = 330;
@@ -156,7 +155,7 @@ interface ItemIds extends BlockIds{
 	const BOTTLE_O_ENCHANTING = 384; const ENCHANTING_BOTTLE = 384;
 	const FIRE_CHARGE = 385;
 	//const BOOK_AND_QUILL = 386;
-	//const WRITTTEN_BOOK = 387;  
+	//const WRITTTEN_BOOK = 387;
 	const EMERALD = 388;
 	const ITEM_FRAME = 389;
 	const FLOWER_POT = 390;
@@ -175,7 +174,8 @@ interface ItemIds extends BlockIds{
 	const ENCHANTED_BOOK = 403;
 	const COMPARATOR = 404;
 	const NETHER_BRICK = 405;
-	const NETHER_QUARTZ = 406; const QUARTZ = 406;
+	const QUARTZ = 406;
+	const NETHER_QUARTZ = 406;
 	const MINECART_WITH_TNT = 407;
 	const MINECART_WITH_HOPPER = 408;
 	const PRISMARINE_SHARD = 409;
@@ -195,7 +195,7 @@ interface ItemIds extends BlockIds{
 	const RAW_MUTTON = 423;
 	const COOKED_MUTTON = 424;
 	//const BANNER = 425;
-	const END_CRYSTAL = 426;
+	//const END_CRYSTAL = 426;
 	const SPRUCE_DOOR = 427;
 	const BIRCH_DOOR = 428;
 	const JUNGLE_DOOR = 429;
@@ -203,30 +203,19 @@ interface ItemIds extends BlockIds{
 	const DARK_OAK_DOOR = 431;
 	const CHORUS_FRUIT = 432;
 	const POPPED_CHORUS_FRUIT = 433;
-
 	const DRAGONS_BREATH = 437;
 	const SPLASH_POTION = 438;
-
-	const LINGERING_POTION = 441;
-
-	const COMMAND_BLOCK_MINECART = 443;
-	const ELYTRA = 444; const ELYTRA_WINGS = 444;
+	const ELYTRA = 444;
+	const ELYTRA_WINGS = 444;
 	const SHULKER_SHELL = 445;
-
-	const TOTEM_OF_UNDYING = 450;
-
-	const IRON_NUGGET = 452;
-
 	const BEETROOT = 457;
-	const BEETROOT_SEEDS = 458; 
+	const BEETROOT_SEEDS = 458;
 	const BEETROOT_SEED = 458;
 	const BEETROOT_SOUP = 459;
 	const RAW_SALMON = 460;
 	const CLOWN_FISH = 461;
 	const PUFFER_FISH = 462;
 	const COOKED_SALMON = 463;
-
 	const ENCHANTED_GOLDEN_APPLE = 466;
-
 	const CAMERA = 498; #blamemojang
 }

@@ -27,66 +27,66 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\protocol\BlockEntityDataPacket;
 use pocketmine\Player;
 
-abstract class Spawnable extends Tile{
+abstract class Spawnable extends Tile {
 
-	public function spawnTo(Player $player){
-		if($this->closed){
-			return false;
-		}
+    public function spawnTo(Player $player) {
+        if ($this->closed) {
+            return false;
+        }
 
-		$nbt = new NBT(NBT::LITTLE_ENDIAN);
-		$nbt->setData($this->getSpawnCompound());
-		$pk = new BlockEntityDataPacket();
-		$pk->x = $this->x;
-		$pk->y = $this->y;
-		$pk->z = $this->z;
-		$pk->namedtag = $nbt->write(true);
-		$player->dataPacket($pk);
+        $nbt = new NBT(NBT::LITTLE_ENDIAN);
+        $nbt->setData($this->getSpawnCompound());
+        $pk = new BlockEntityDataPacket();
+        $pk->x = $this->x;
+        $pk->y = $this->y;
+        $pk->z = $this->z;
+        $pk->namedtag = $nbt->write(true);
+        $player->dataPacket($pk);
 
-		return true;
-	}
+        return true;
+    }
 
-	public function __construct(Level $level, CompoundTag $nbt){
-		parent::__construct($level, $nbt);
-		$this->spawnToAll();
-	}
+    public function __construct(Level $level, CompoundTag $nbt) {
+        parent::__construct($level, $nbt);
+        $this->spawnToAll();
+    }
 
-	public function spawnToAll(){
-		if($this->closed){
-			return;
-		}
+    public function spawnToAll() {
+        if ($this->closed) {
+            return;
+        }
 
-		foreach($this->getLevel()->getChunkPlayers($this->chunk->getX(), $this->chunk->getZ()) as $player){
-			if($player->spawned === true){
-				$this->spawnTo($player);
-			}
-		}
-	}
+        foreach ($this->getLevel()->getChunkPlayers($this->chunk->getX(), $this->chunk->getZ()) as $player) {
+            if ($player->spawned === true) {
+                $this->spawnTo($player);
+            }
+        }
+    }
 
-	protected function onChanged(){
-		$this->spawnToAll();
+    protected function onChanged() {
+        $this->spawnToAll();
 
-		if($this->chunk !== null){
-			$this->chunk->setChanged();
-			$this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
-		}
-	}
+        if ($this->chunk !== null) {
+            $this->chunk->setChanged();
+            $this->level->clearChunkCache($this->chunk->getX(), $this->chunk->getZ());
+        }
+    }
 
-	/**
-	 * @return CompoundTag
-	 */
-	public abstract function getSpawnCompound();
+    /**
+     * @return CompoundTag
+     */
+    public abstract function getSpawnCompound();
 
-	/**
-	 * Called when a player updates a block entity's NBT data
-	 * for example when writing on a sign.
-	 *
-	 * @param CompoundTag $nbt
-	 * @param Player      $player
-	 *
-	 * @return bool indication of success, will respawn the tile to the player if false.
-	 */
-	public function updateCompoundTag(CompoundTag $nbt, Player $player) : bool{
-		return false;
-	}
+    /**
+     * Called when a player updates a block entity's NBT data
+     * for example when writing on a sign.
+     *
+     * @param CompoundTag $nbt
+     * @param Player $player
+     *
+     * @return bool indication of success, will respawn the tile to the player if false.
+     */
+    public function updateCompoundTag(CompoundTag $nbt, Player $player): bool {
+        return false;
+    }
 }
