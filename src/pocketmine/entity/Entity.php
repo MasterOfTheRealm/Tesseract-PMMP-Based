@@ -171,7 +171,6 @@ abstract class Entity extends Location implements Metadatable {
         Entity::registerEntity(Arrow::class);
         Entity::registerEntity(Bat::class);
         Entity::registerEntity(Blaze::class);
-        Entity::registerEntity(Boat::class);
         Entity::registerEntity(CaveSpider::class);
         Entity::registerEntity(Chicken::class);
         Entity::registerEntity(Cow::class);
@@ -179,7 +178,6 @@ abstract class Entity extends Location implements Metadatable {
         Entity::registerEntity(DroppedItem::class);
         Entity::registerEntity(Egg::class);
         Entity::registerEntity(Enderman::class);
-        //Entity::registerEntity(EnderDragon::class);
         Entity::registerEntity(EnderPearl::class);
         Entity::registerEntity(FallingSand::class);
         Entity::registerEntity(FishingHook::class);
@@ -189,10 +187,6 @@ abstract class Entity extends Location implements Metadatable {
         Entity::registerEntity(IronGolem::class);
         Entity::registerEntity(LavaSlime::class); //Magma Cube
         Entity::registerEntity(Lightning::class);
-        Entity::registerEntity(Minecart::class);
-        Entity::registerEntity(MinecartChest::class);
-        Entity::registerEntity(MinecartHopper::class);
-        Entity::registerEntity(MinecartTNT::class);
         Entity::registerEntity(Mooshroom::class);
         Entity::registerEntity(Ocelot::class);
         Entity::registerEntity(Painting::class);
