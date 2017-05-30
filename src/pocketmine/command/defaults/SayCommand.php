@@ -34,7 +34,7 @@ class SayCommand extends VanillaCommand {
             $name,
             "%pocketmine.command.say.description",
             "%pocketmine.command.say.usage",
-            ["broadcast", "announce"]
+            ["broadcast"]
         );
         $this->setPermission("pocketmine.command.say");
     }
@@ -43,14 +43,11 @@ class SayCommand extends VanillaCommand {
         if (!$this->testPermission($sender)) {
             return true;
         }
-
         if (count($args) === 0) {
             $sender->sendMessage(new TranslationContainer("commands.generic.usage", [$this->usageMessage]));
-
             return false;
         }
-
-        $sender->getServer()->broadcastMessage(new TranslationContainer(TextFormat::LIGHT_PURPLE . "%chat.type.announcement", [$sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? "Server" : $sender->getName()), TextFormat::LIGHT_PURPLE . implode(" ", $args)]));
+        $sender->getServer()->broadcastMessage(new TranslationContainer("%chat.type.announcement", [$sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? "Server" : $sender->getName()), implode(" ", $args)]));
         return true;
     }
 }
