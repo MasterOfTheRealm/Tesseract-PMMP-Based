@@ -43,7 +43,7 @@ use pocketmine\command\defaults\ListCommand;
 use pocketmine\command\defaults\MeCommand;
 use pocketmine\command\defaults\OpCommand;
 use pocketmine\command\defaults\PardonCommand;
-use pocketmine\command\defaults\PardonCidCommand;//TODO Add back
+use pocketmine\command\defaults\PardonCidCommand;
 use pocketmine\command\defaults\PardonIpCommand;
 use pocketmine\command\defaults\ParticleCommand;
 use pocketmine\command\defaults\PluginsCommand;
@@ -122,6 +122,7 @@ class SimpleCommandMap implements CommandMap {
         $this->register("pocketmine", new BanIpCommand("ban-ip"));
         $this->register("pocketmine", new BanListCommand("banlist"));
         $this->register("pocketmine", new PardonCommand("pardon"));
+        $this->register("pocketmine", new PardonCidCommand("pardoncid"));
         $this->register("pocketmine", new PardonIpCommand("pardon-ip"));
         $this->register("pocketmine", new SayCommand("say"));
         $this->register("pocketmine", new MeCommand("me"));
