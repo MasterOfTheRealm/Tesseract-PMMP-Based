@@ -107,7 +107,7 @@ abstract class DataPacket extends BinaryStream {
                     $value[2] = $this->getVarInt(); //z
                     break;
                 case Entity::DATA_TYPE_LONG:
-                    $value = $this->getVarInt(); //TODO: varint64 proper support
+                    $value = $this->getVarLong();
                     break;
                 case Entity::DATA_TYPE_VECTOR3F:
                     $value = [0.0, 0.0, 0.0];
@@ -157,12 +157,53 @@ abstract class DataPacket extends BinaryStream {
                     $this->putVarInt($d[1][2]); //z
                     break;
                 case Entity::DATA_TYPE_LONG:
-                    $this->putVarInt($d[1]); //TODO: varint64 support
+                    $this->putVarLong($d[1]);
                     break;
                 case Entity::DATA_TYPE_VECTOR3F:
                     //TODO: change this implementation (use objects)
                     $this->putVector3f($d[1][0], $d[1][1], $d[1][2]); //x, y, z
             }
         }
+    }
+
+    public function getEntityUniqueId(){
+        return $this->getVarLong();
+    }
+
+    public function putEntityUniqueId($eid){
+        $this->putVarLong($eid);
+    }
+
+    public function getEntityRuntimeId(){
+        return $this->getUnsignedVarLong();
+    }
+
+    public function putEntityRuntimeId($eid){
+        $this->putUnsignedVarLong($eid);
+    }
+
+    public function getBlockPosition(&$x, &$y, &$z){
+        $x = $this->getVarInt();
+        $y = $this->getUnsignedVarInt();
+        $z = $this->getVarInt();
+    }
+
+
+    public function putBlockPosition($x, $y, $z){
+        $this->putVarInt($x);
+        $this->putUnsignedVarInt($y);
+        $this->putVarInt($z);
+    }
+
+    public function getVector3f(&$x, &$y, &$z){
+        $x = $this->getLFloat(4);
+        $y = $this->getLFloat(4);
+        $z = $this->getLFloat(4);
+    }
+
+    public function putVector3f($x, $y, $z){
+        $this->putLFloat($x);
+        $this->putLFloat($y);
+        $this->putLFloat($z);
     }
 }

@@ -450,6 +450,10 @@ namespace pocketmine {
         exit(1); //Exit with error
     }
 
+    if(PHP_INT_SIZE < 8){
+    }
+
+
     if (file_exists(\pocketmine\PATH . ".git/refs/heads/master")) { //Found Git information!
         define('pocketmine\GIT_COMMIT', strtolower(trim(file_get_contents(\pocketmine\PATH . ".git/refs/heads/master"))));
     } else {

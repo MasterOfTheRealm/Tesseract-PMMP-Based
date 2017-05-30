@@ -34,7 +34,7 @@ class BlockPickRequestPacket extends DataPacket {
     public $unknown;
 
     public function decode() {
-        $this->getBlockCoords($this->x, $this->y, $this->z);
+        $this->getBlockPosition($this->x, $this->y, $this->z);
         $this->unknown = $this->getByte();
     }
 

@@ -45,7 +45,7 @@ class ContainerOpenPacket extends DataPacket {
         $this->putByte($this->windowid);
         $this->putByte($this->type);
         $this->putVarInt($this->slots);
-        $this->putBlockCoords($this->x, $this->y, $this->z);
-        $this->putEntityId($this->entityId);
+        $this->putBlockPosition($this->x, $this->y, $this->z);
+        $this->putEntityUniqueId($this->entityId);
     }
 }

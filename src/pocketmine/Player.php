@@ -2124,6 +2124,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 }
                 break;
 
+            case ProtocolInfo::LEVEL_SOUND_EVENT_PACKET:
+                $this->getLevel()->addChunkPacket($this->chunk->getX(), $this->chunk->getZ(), $packet);
+                break;
+
             case ProtocolInfo::MOVE_PLAYER_PACKET:
                 $newPos = new Vector3($packet->x, $packet->y - $this->getEyeHeight(), $packet->z);
 
@@ -2194,7 +2198,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
                     } elseif ($this->isCreative()) {
                         $item = $this->inventory->getItemInHand();
-                        if ($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this) === true) {
+                        if ($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this, true) === true) {
                             break;
                         }
                     } elseif (!$this->inventory->getItemInHand()->equals($packet->item)) {
@@ -2202,7 +2206,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     } else {
                         $item = $this->inventory->getItemInHand();
                         $oldItem = clone $item;
-                        if ($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this)) {
+                        if ($this->level->useItemOn($blockVector, $item, $packet->face, $packet->fx, $packet->fy, $packet->fz, $this, true)) {
                             if (!$item->equals($oldItem) or $item->getCount() !== $oldItem->getCount()) {
                                 $this->inventory->setItemInHand($item);
                                 $this->inventory->sendHeldItem($this->hasSpawned);
@@ -3557,6 +3561,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $this->loadQueue = [];
             $this->hasSpawned = [];
             $this->spawnPosition = null;
+            $this->forceMovement = null;
         }
 
         if ($this->perm !== null) {
@@ -4045,7 +4050,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     }
 
     public function onChunkChanged(Chunk $chunk) {
-        unset($this->usedChunks[Level::chunkHash($chunk->getX(), $chunk->getZ())]);
+        if(isset($this->usedChunks[$hash = Level::chunkHash($chunk->getX(), $chunk->getZ())])){
+            $this->usedChunks[$hash] = false;
+        }
     }
 
     public function onChunkLoaded(Chunk $chunk) {

@@ -70,6 +70,14 @@ abstract class Living extends Entity implements Damageable {
         }
     }
 
+    public function getAbsorption() : int{
+        return (int) $this->attributeMap->getAttribute(Attribute::ABSORPTION)->getValue();
+    }
+
+    public function setAbsorption(int $absorption){
+        $this->attributeMap->getAttribute(Attribute::ABSORPTION)->setValue($absorption);
+    }
+
     public function saveNBT() {
         parent::saveNBT();
         $this->namedtag->Health = new ShortTag("Health", $this->getHealth());

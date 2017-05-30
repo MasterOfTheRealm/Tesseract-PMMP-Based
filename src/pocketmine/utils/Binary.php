@@ -337,8 +337,6 @@ class Binary {
         return strrev(self::writeLong($value));
     }
 
-    //TODO: proper varlong support
-
     public static function readVarInt($stream) {
         $shift = PHP_INT_SIZE === 8 ? 63 : 31;
         $raw = self::readUnsignedVarInt($stream);
@@ -348,20 +346,23 @@ class Binary {
 
     public static function readUnsignedVarInt($stream) {
         $value = 0;
-        $i = 0;
-        do {
-            if ($i > 63) {
-                throw new \InvalidArgumentException("Varint did not terminate after 10 bytes!");
-            }
-            $value |= ((($b = $stream->getByte()) & 0x7f) << $i);
-            $i += 7;
-        } while ($b & 0x80);
+        for($i = 0; $i <= 35; $i += 7){
+            $b = $stream->getByte();
+            $value |= (($b & 0x7f) << $i);
 
-        return $value;
+            if(($b & 0x80) === 0){
+                return $value;
+            }
+        }
+
+        throw new \InvalidArgumentException("VarInt did not terminate after 5 bytes!");
     }
 
     public static function writeVarInt($v) {
-        return self::writeUnsignedVarInt(($v << 1) ^ ($v >> (PHP_INT_SIZE === 8 ? 63 : 31)));
+        if(PHP_INT_SIZE === 8){
+            $v = ($v << 32 >> 32);
+        }
+        return self::writeUnsignedVarInt(($v << 1) ^ ($v >> 31));
     }
 
     public static function writeUnsignedVarInt($value) {
@@ -375,6 +376,132 @@ class Binary {
             }
             $value = (($value >> 7) & (PHP_INT_MAX >> 6)); //PHP really needs a logical right-shift operator
         }
-        throw new \InvalidArgumentException("Value too large to be encoded as a varint");
+        throw new \InvalidArgumentException("Value too large to be encoded as a VarInt");
+    }
+
+    public static function readVarLong($stream){
+        if(PHP_INT_SIZE === 8){
+            return self::readVarLong_64($stream);
+        }else{
+            return self::readVarLong_32($stream);
+        }
+    }
+
+    public static function readVarLong_32($stream){
+        $raw = self::readUnsignedVarLong_32($stream);
+        $result = bcdiv($raw, "2");
+        if(bcmod($raw, "2") === "1"){
+            $result = bcsub(bcmul($result, "-1"), "1");
+        }
+
+        return $result;
+    }
+
+    public static function readVarLong_64($stream){
+        $raw = self::readUnsignedVarLong_64($stream);
+        $temp = ((($raw << 63) >> 63) ^ $raw) >> 1;
+        return $temp ^ ($raw & (1 << 63));
+    }
+
+    public static function readUnsignedVarLong($stream){
+        if(PHP_INT_SIZE === 8){
+            return self::readUnsignedVarLong_64($stream);
+        }else{
+            return self::readUnsignedVarLong_32($stream);
+        }
+    }
+
+    public static function readUnsignedVarLong_32($stream){
+        $value = "0";
+        for($i = 0; $i <= 63; $i += 7){
+            $b = $stream->getByte();
+            $value = bcadd($value, bcmul($b & 0x7f, bcpow("2", "$i")));
+
+            if(($b & 0x80) === 0){
+                return $value;
+            }
+        }
+
+        throw new \InvalidArgumentException("VarLong did not terminate after 10 bytes!");
+    }
+
+    public static function readUnsignedVarLong_64($stream){
+        $value = 0;
+        for($i = 0; $i <= 63; $i += 7){
+            $b = $stream->getByte();
+            $value |= (($b & 0x7f) << $i);
+
+            if(($b & 0x80) === 0){
+                return $value;
+ 			}
+ 		}
+
+ 		throw new \InvalidArgumentException("VarLong did not terminate after 10 bytes!");
+ 	}
+
+    public static function writeVarLong($v){
+        if(PHP_INT_SIZE === 8){
+            return self::writeVarLong_64($v);
+ 		}else{
+            return self::writeVarLong_32($v);
+ 		}
+ 	}
+
+    public static function writeVarLong_32($v){
+        $v = bcmod(bcmul($v, "2"), "18446744073709551616");
+        if(bccomp($v, "0") == -1){
+            $v = bcsub(bcmul($v, "-1"), "1");
+        }
+
+ 		return self::writeUnsignedVarLong_32($v);
+ 	}
+
+    public static function writeVarLong_64($v){
+        return self::writeUnsignedVarLong_64(($v << 1) ^ ($v >> 63));
+ 	}
+
+    public static function writeUnsignedVarLong($v){
+        if(PHP_INT_SIZE === 8){
+            return self::writeUnsignedVarLong_64($v);
+ 		}else{
+            return self::writeUnsignedVarLong_32($v);
+ 		}
+ 	}
+
+    public static function writeUnsignedVarLong_32($value){
+        $buf = "";
+
+        if(bccomp($value, "0") == -1){
+            $value = bcadd($value, "18446744073709551616");
+        }
+
+ 		for($i = 0; $i < 10; ++$i){
+            $byte = (int) bcmod($value, "128");
+            $value = bcdiv($value, "128");
+            if($value !== "0"){
+                $buf .= chr($byte | 0x80);
+            }else{
+                $buf .= chr($byte);
+                return $buf;
+ 			}
+ 		}
+
+ 		throw new \InvalidArgumentException("Value too large to be encoded as a VarLong");
+ 	}
+
+    public static function writeUnsignedVarLong_64($value){
+        $buf = "";
+        for($i = 0; $i < 10; ++$i){
+            if(($value >> 7) !== 0){
+                $buf .= chr($value | 0x80); //Let chr() take the last byte of this, it's faster than adding another & 0x7f.
+            }else{
+                $buf .= chr($value & 0x7f);
+                return $buf;
+            }
+
+            $value = (($value >> 7) & (PHP_INT_MAX >> 6)); //PHP really needs a logical right-shift operator
+        }
+
+        throw new \InvalidArgumentException("Value too large to be encoded as a VarLong");
     }
 }

@@ -39,12 +39,12 @@ class InteractPacket extends DataPacket {
 
     public function decode() {
         $this->action = $this->getByte();
-        $this->target = $this->getEntityId();
+        $this->target = $this->getEntityRuntimeId();
     }
 
     public function encode() {
         $this->reset();
         $this->putByte($this->action);
-        $this->putEntityId($this->target);
+        $this->putEntityRuntimeId($this->target);
     }
 }

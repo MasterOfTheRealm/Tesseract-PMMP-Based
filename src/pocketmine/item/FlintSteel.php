@@ -24,6 +24,7 @@ use pocketmine\block\Fire;
 use pocketmine\block\Portal;
 use pocketmine\block\Solid;
 use pocketmine\level\Level;
+use pocketmine\network\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use pocketmine\math\Vector3;
 
