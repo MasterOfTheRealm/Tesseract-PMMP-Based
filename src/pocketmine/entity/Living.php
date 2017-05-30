@@ -42,23 +42,21 @@ abstract class Living extends Entity implements Damageable {
 
     protected $attackTime = 0;
 
+    protected $jumpVelocity = 0.42;
+
     protected $invisible = false;
 
     protected function initEntity() {
         parent::initEntity();
 
-        if (isset($this->namedtag->HealF)) {
-            $this->namedtag->Health = new ShortTag("Health", (int)$this->namedtag["HealF"]);
+        if(isset($this->namedtag->HealF)){
+            $this->namedtag->Health = new ShortTag("Health", (int) $this->namedtag["HealF"]);
             unset($this->namedtag->HealF);
-        }
-
-        if (!isset($this->namedtag->Health) or !($this->namedtag->Health instanceof ShortTag)) {
+        }elseif(!isset($this->namedtag->Health) or !($this->namedtag->Health instanceof ShortTag)){
             $this->namedtag->Health = new ShortTag("Health", $this->getMaxHealth());
         }
 
-        if ($this->namedtag["Health"] <= 0)
-            $this->setHealth(20);
-        else $this->setHealth($this->namedtag["Health"]);
+        $this->setHealth($this->namedtag["Health"]);
     }
 
     public function setHealth($amount) {
@@ -93,6 +91,24 @@ abstract class Living extends Entity implements Damageable {
 
         $this->attackTime = 0;
     }
+
+    /**
+     * Returns the initial upwards velocity of a jumping entity in blocks/tick, including additional velocity due to effects.
+     * @return float
+     */
+    public function getJumpVelocity() : float{
+        return $this->jumpVelocity + ($this->hasEffect(Effect::JUMP) ? (($this->getEffect(Effect::JUMP)->getAmplifier() + 1) / 10) : 0);
+    }
+
+    /**
+     * Called when the entity jumps from the ground. This method adds upwards velocity to the entity.
+     */
+    public function jump(){
+        if($this->onGround){
+            $this->motionY = $this->getJumpVelocity(); //Y motion should already be 0 if we're jumping from the ground.
+        }
+    }
+
 
     public function attack($damage, EntityDamageEvent $source) {
         if ($this->attackTime > 0 or $this->noDamageTicks > 0) {
@@ -155,16 +171,20 @@ abstract class Living extends Entity implements Damageable {
 		$this->setMotion($motion);
 	}
 
-	public function kill(){
-		if(!$this->isAlive()){
-			return;
-		}
-		parent::kill();
-		$this->server->getPluginManager()->callEvent($ev = new EntityDeathEvent($this, $this->getDrops()));
-		foreach($ev->getDrops() as $item){
-			$this->getLevel()->dropItem($this, $item);
-		}
-	}
+	public function kill() {
+        if (!$this->isAlive()) {
+            return;
+        }
+        parent::kill();
+        $this->callDeathEvent();
+    }
+
+    protected function callDeathEvent() {
+        $this->server->getPluginManager()->callEvent($ev = new EntityDeathEvent($this, $this->getDrops()));
+        foreach ($ev->getDrops() as $item) {
+            $this->getLevel()->dropItem($this, $item);
+        }
+    }
 
 	public function entityBaseTick($tickDiff = 1, $EnchantL = 0){
 		Timings::$timerLivingEntityBaseTick->startTiming();

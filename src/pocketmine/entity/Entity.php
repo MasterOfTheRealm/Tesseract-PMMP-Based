@@ -938,6 +938,10 @@ abstract class Entity extends Location implements Metadatable {
     }
 
     protected function checkObstruction($x, $y, $z) {
+        if(count($this->level->getCollisionCubes($this, $this->getBoundingBox(), false)) === 0){
+            return false;
+        }
+
         $i = Math::floorFloat($x);
         $j = Math::floorFloat($y);
         $k = Math::floorFloat($z);
@@ -1419,6 +1423,8 @@ abstract class Entity extends Location implements Metadatable {
             return true;
         }
 
+        $this->blocksAround = null;
+
         if ($this->keepMovement) {
             $this->boundingBox->offset($dx, $dy, $dz);
             $this->setPosition($this->temporalVector->setComponents(($this->boundingBox->minX + $this->boundingBox->maxX) / 2, $this->boundingBox->minY, ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2));
@@ -1547,7 +1553,7 @@ abstract class Entity extends Location implements Metadatable {
             $this->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
 
             $this->checkChunks();
-
+            $this->checkBlockCollision();
             $this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
             $this->updateFallState($dy, $this->onGround);
 

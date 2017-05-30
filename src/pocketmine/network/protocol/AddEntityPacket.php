@@ -42,6 +42,7 @@ class AddEntityPacket extends DataPacket {
     public $speedZ;
     public $yaw;
     public $pitch;
+    /** @var Attribute[] */
     public $attributes = [];
     public $metadata = [];
     public $links = [];
@@ -57,8 +58,8 @@ class AddEntityPacket extends DataPacket {
         $this->putUnsignedVarInt($this->type);
         $this->putVector3f($this->x, $this->y, $this->z);
         $this->putVector3f($this->speedX, $this->speedY, $this->speedZ);
-        $this->putLFloat($this->pitch * (256 / 360));
-        $this->putLFloat($this->yaw * (256 / 360));
+        $this->putLFloat($this->pitch);
+        $this->putLFloat($this->yaw);
         $this->putUnsignedVarInt(count($this->attributes));
         foreach ($this->attributes as $entry) {
             $this->putString($entry->getName());

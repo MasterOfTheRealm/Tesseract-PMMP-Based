@@ -125,6 +125,7 @@ use pocketmine\network\protocol\EntityEventPacket;
 use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\network\protocol\Info as ProtocolInfo;
 use pocketmine\network\protocol\InteractPacket;
+use pocketmine\network\protocol\LevelEventPacket;
 use pocketmine\network\protocol\MovePlayerPacket;
 use pocketmine\network\protocol\PlayerActionPacket;
 use pocketmine\network\protocol\PlayStatusPacket;
@@ -258,7 +259,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     /** @var Vector3 */
     public $fromPos = null;
     private $portalTime = 0;
-    protected $shouldSendStatus = false;
     /** @var  Position */
     private $shouldResPos;
 
@@ -755,7 +755,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $pk->y = $this->y;
                 $pk->z = $this->z;
                 $this->dataPacket($pk);
-                $this->shouldSendStatus = true;
+                $pk1 = new PlayStatusPacket();
+                $pk1->status = PlayStatusPacket::PLAYER_SPAWN;
+                $this->dataPacket($pk1);
             }
             $targetLevel->getWeather()->sendWeather($this);
 
@@ -1516,7 +1518,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $delta = pow($this->lastX - $to->x, 2) + pow($this->lastY - $to->y, 2) + pow($this->lastZ - $to->z, 2);
         $deltaAngle = abs($this->lastYaw - $to->yaw) + abs($this->lastPitch - $to->pitch);
 
-        if (!$revert and ($delta > (1 / 16) or $deltaAngle > 10)) {
+        if(!$revert and ($delta > 0.0001 or $deltaAngle > 1.0)){
 
             $isFirst = ($this->lastX === null or $this->lastY === null or $this->lastZ === null);
 
@@ -1548,11 +1550,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         $this->teleport($ev->getTo());
                     } else {
                         $this->level->addEntityMovement($this->x >> 4, $this->z >> 4, $this->getId(), $this->x, $this->y + $this->getEyeHeight(), $this->z, $this->yaw, $this->pitch, $this->yaw);
-                    }
 
-                    if ($this->fishingHook instanceof FishingHook) {
-                        if ($this->distance($this->fishingHook) > 33 or $this->inventory->getItemInHand()->getId() !== Item::FISHING_ROD) {
-                            $this->setFishingHook();
+                        $distance = $from->distance($to);
+
+                        if($this->isSprinting()){
+                            $this->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
+                        }else{
+                            $this->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
                         }
                     }
                 }
@@ -1714,7 +1718,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $this->processMovement($tickDiff);
             $this->entityBaseTick($tickDiff);
 
-            if (!$this->isSpectator()) {
+            if(!$this->isSpectator()) {
                 $this->checkNearEntities($tickDiff);
             }
 
@@ -1739,6 +1743,20 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $this->timings->stopTiming();
 
         return true;
+    }
+
+    public function doFoodTick(int $tickDiff = 1){
+        if($this->isSurvival()){
+            parent::doFoodTick($tickDiff);
+        }
+ 	}
+
+	public function exhaust(float $amount, int $cause = PlayerExhaustEvent::CAUSE_CUSTOM) : float{
+    if($this->isSurvival()){
+        return parent::exhaust($amount, $cause);
+    }
+
+        return 0.0;
     }
 
     public function checkNetwork() {
@@ -1946,9 +1964,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             round($this->y, 4),
             round($this->z, 4)
         ]));
-        /*if($this->isOp()){
-			$this->setRemoveFormat(false);
-		}*/
+
         if ($this->gamemode === Player::SPECTATOR) {
             $pk = new ContainerSetContentPacket();
             $pk->windowid = ContainerSetContentPacket::SPECIAL_CREATIVE;
@@ -2358,11 +2374,20 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         } else {
                             $this->inventory->sendHeldItem($this);
                         }
+
+                        if(!$this->isCreative()){
+                            //TODO: improve this to take stuff like swimming, ladders, enchanted tools into account, fix wrong tool break time calculations for bad tools (pmmp/PocketMine-MP#211)
+                            $breakTime = ceil($target->getBreakTime($this->inventory->getItemInHand()) * 20);
+                            if($breakTime > 0){
+                                $this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_START_BREAK, 65535 / $breakTime);
+                            }
+                        }
                         break;
                     case PlayerActionPacket::ACTION_ABORT_BREAK:
-                        $this->lastBreak = PHP_INT_MAX;
+                        $this->lastBreak = microtime(true);
                         break;
                     case PlayerActionPacket::ACTION_STOP_BREAK:
+                        $this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_STOP_BREAK);
                         break;
                     case PlayerActionPacket::ACTION_RELEASE_ITEM:
                         if ($this->startAction > -1 and $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_ACTION)) {
@@ -2506,10 +2531,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
                         $this->removeAllEffects();
                         $this->setHealth($this->getMaxHealth());
-                        $this->setFood(20);
-                        $this->starvationTick = 0;
-                        $this->foodTick = 0;
-                        $this->foodUsageTime = 0;
+
+                        foreach($this->attributeMap->getAll() as $attr){
+                            $attr->resetToDefault();
+                        }
 
                         $this->sendData($this);
 
@@ -2521,6 +2546,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                         $this->scheduleUpdate();
                         break;
                     case PlayerActionPacket::ACTION_JUMP:
+                        $this->jump();
                         break 2;
                     case PlayerActionPacket::ACTION_START_SPRINT:
                         $ev = new PlayerToggleSprintEvent($this, true);
@@ -2576,6 +2602,9 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                             $this->setGliding(false);
                         }
                         break 2;
+                    case PlayerActionPacket::ACTION_CONTINUE_BREAK:
+                        $block = $this->level->getBlock($pos);
+                        $this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, $block->getId() | ($block->getDamage() << 8) | ($packet->face << 16));
                     default:
                         assert(false, "Unhandled player action " . $packet->action . " from " . $this->getName());
                 }
@@ -3382,14 +3411,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
     }
 
     /**
-     * Send a title text with/without a sub title text to a player
-     * -1 defines the default value used by the client
-     *
-     * @param $title
-     * @param string $subtitle
-     * @return bool
+     * @deprecated Use addTitle instead.
      */
     public function sendTitle(string $title, string $subtitle = "", int $fadein = -1, int $fadeout = -1, int $duration = -1) {
+        $this->prepareTitle($title, $subtitle, $fadein, $fadeout, $duration); //correct the bug but not optimized
+        $this->prepareTitle($title, $subtitle, $fadein, $fadeout, $duration);
+    }
+
+    public function addTitle(string $title, string $subtitle = "", int $fadein = -1, int $fadeout = -1, int $duration = -1) {
         $this->prepareTitle($title, $subtitle, $fadein, $fadeout, $duration); //correct the bug but not optimized
         $this->prepareTitle($title, $subtitle, $fadein, $fadeout, $duration);
     }
@@ -3401,7 +3430,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $pk = new TransferPacket();
             $pk->address = $address;
             $pk->port = $port;
-            $this->dataPacket($pk);
+            $this->directDataPacket($pk);
             return true;
         }
         return false;
@@ -3411,14 +3440,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
      * This code must be changed in the future but currently, send 2 packets fixes the subtitle bug...
      */
     private function prepareTitle(string $title, string $subtitle = "", int $fadein = -1, int $fadeout = -1, int $duration = -1) {
-        $pk = new SetTitlePacket();
-        $pk->type = SetTitlePacket::TYPE_TITLE;
-        $pk->title = $title;
-        $pk->fadeInDuration = $fadein;
-        $pk->fadeOutDuration = $fadeout;
-        $pk->duration = $duration;
-        $this->dataPacket($pk);
-
         if ($subtitle !== "") {
             $pk = new SetTitlePacket();
             $pk->type = SetTitlePacket::TYPE_SUB_TITLE;
@@ -3428,6 +3449,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             $pk->duration = $duration;
             $this->dataPacket($pk);
         }
+
+        $pk = new SetTitlePacket();
+        $pk->type = SetTitlePacket::TYPE_TITLE;
+        $pk->title = $title;
+        $pk->fadeInDuration = $fadein;
+        $pk->fadeOutDuration = $fadeout;
+        $pk->duration = $duration;
+        $this->dataPacket($pk);
     }
 
     /**
@@ -3604,6 +3633,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             return;
         }
 
+        parent::kill();
+
+        $pk = new RespawnPacket();
+        $pos = $this->getSpawn();
+        $pk->x = $pos->x;
+        $pk->y = $pos->y;
+        $pk->z = $pos->z;
+        $this->dataPacket($pk);
+    }
+
+    protected function callDeathEvent(){
         $message = "death.attack.generic";
 
         $params = [
@@ -3713,10 +3753,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 break;
 
             default:
-
+                break;
         }
-
-        Entity::kill();
 
         $ev = new PlayerDeathEvent($this, $this->getDrops(), new TranslationContainer($message, $params));
         $ev->setKeepInventory($this->server->keepInventory);
@@ -3746,16 +3784,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         if ($ev->getDeathMessage() != "") {
             $this->server->broadcast($ev->getDeathMessage(), Server::BROADCAST_CHANNEL_USERS);
         }
-
-        $pos = $this->getSpawn();
-
-        $this->setHealth(0);
-
-        $pk = new RespawnPacket();
-        $pk->x = $pos->x;
-        $pk->y = $pos->y;
-        $pk->z = $pos->z;
-        $this->dataPacket($pk);
     }
 
     public function setHealth($amount) {

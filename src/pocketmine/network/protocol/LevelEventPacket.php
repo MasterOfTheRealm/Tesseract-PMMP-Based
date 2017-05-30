@@ -71,6 +71,9 @@ class LevelEventPacket extends DataPacket {
     const EVENT_PARTICLE_EYE_DESPAWN = 2003;
     const EVENT_PARTICLE_SPAWN = 2004;
 
+
+    const EVENT_PARTICLE_PUNCH_BLOCK = 2014;
+
     const EVENT_START_RAIN = 3001;
     const EVENT_START_THUNDER = 3002;
     const EVENT_STOP_RAIN = 3003;
@@ -81,6 +84,9 @@ class LevelEventPacket extends DataPacket {
     const EVENT_SOUND_SPELL = 3504;
     const EVENT_SOUND_SPLASH = 3506;
     const EVENT_SOUND_GRAY_SPLASH = 3507;//TODO: fix name
+
+    const EVENT_BLOCK_START_BREAK = 3600;
+	const EVENT_BLOCK_STOP_BREAK = 3601;
 
     const EVENT_SET_DATA = 4000;
 

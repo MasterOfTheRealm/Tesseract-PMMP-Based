@@ -93,6 +93,7 @@ use pocketmine\network\protocol\BatchPacket;
 use pocketmine\network\protocol\DataPacket;
 use pocketmine\network\protocol\FullChunkDataPacket;
 use pocketmine\network\protocol\LevelEventPacket;
+use pocketmine\network\protocol\LevelSoundEventPacket;
 use pocketmine\network\protocol\MoveEntityPacket;
 use pocketmine\network\protocol\SetEntityMotionPacket;
 use pocketmine\network\protocol\SetTimePacket;
@@ -574,6 +575,23 @@ class Level implements ChunkManager, Metadatable {
                 }
             }
         }
+    }
+
+    public function broadcastLevelEvent(Vector3 $pos, int $evid, int $data = 0){
+        $pk = new LevelEventPacket();
+        $pk->evid = $evid;
+        $pk->data = $data;
+        list($pk->x, $pk->y, $pk->z) = [$pos->x, $pos->y, $pos->z];
+        $this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
+    }
+
+    public function broadcastLevelSoundEvent(Vector3 $pos, int $soundId, int $pitch = 1, int $extraData = -1){
+        $pk = new LevelSoundEventPacket();
+        $pk->sound = $soundId;
+        $pk->pitch = $pitch;
+        $pk->extraData = $extraData;
+        list($pk->x, $pk->y, $pk->z) = [$pos->x, $pos->y, $pos->z];
+        $this->addChunkPacket($pos->x >> 4, $pos->z >> 4, $pk);
     }
 
     /**
@@ -1798,7 +1816,7 @@ class Level implements ChunkManager, Metadatable {
      *
      * @return bool
      */
-    public function useItemOn(Vector3 $vector, Item &$item, int $face, float $fx = 0.0, float $fy = 0.0, float $fz = 0.0, Player $player = null): bool {
+    public function useItemOn(Vector3 $vector, Item &$item, int $face, float $fx = 0.0, float $fy = 0.0, float $fz = 0.0, Player $player = null, bool $playSound = false): bool {
         $target = $this->getBlock($vector);
         $block = $target->getSide($face);
 
@@ -1826,36 +1844,17 @@ class Level implements ChunkManager, Metadatable {
             $this->server->getPluginManager()->callEvent($ev);
             if (!$ev->isCancelled()) {
                 $target->onUpdate(self::BLOCK_UPDATE_TOUCH);
-                if (!$player->isSneaking()) {
-                    if ($target->canBeActivated() === true and $target->onActivate($item, $player) === true) {
-                        if ($item->getCount() <= 0) {
-                            $item = Item::get(Item::AIR, 0, 0);
-                        } elseif ($item->isTool() and $item->getDamage() >= $item->getMaxDurability()) {
-                            $item = Item::get(Item::AIR, 0, 0);
-                        }
-                        return true;
-                    }
-                    if ($item->canBeActivated() and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)) {
-                        if ($item->getCount() <= 0) {
-                            $item = Item::get(Item::AIR, 0, 0);
-                            return true;
-                        } elseif ($item->isTool() and $item->getDamage() >= $item->getMaxDurability()) {
-                            $item = Item::get(Item::AIR, 0, 0);
-                            return true;
-                        }
-                    }
-                }
-                /*if(!$player->isSneaking() and $target->canBeActivated() === true and $target->onActivate($item, $player) === true){
+                if(!$player->isSneaking() and $target->canBeActivated() === true and $target->onActivate($item, $player) === true){
 					return true;
 				}
 
 				if(!$player->isSneaking() and $item->canBeActivated() and $item->onActivate($this, $player, $block, $target, $face, $fx, $fy, $fz)){
 					if($item->getCount() <= 0){
 						$item = Item::get(Item::AIR, 0, 0);
-
-						return true;
 					}
-				}*/
+
+                    return true;
+				}
             } else {
                 return false;
             }
@@ -1940,6 +1939,10 @@ class Level implements ChunkManager, Metadatable {
 
         if ($hand->place($item, $block, $target, $face, $fx, $fy, $fz, $player) === false) {
             return false;
+        }
+
+        if($playSound){
+            $this->broadcastLevelSoundEvent($hand, LevelSoundEventPacket::SOUND_PLACE, 1, $hand->getId());
         }
         $item->setCount($item->getCount() - 1);
 
