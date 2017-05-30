@@ -70,6 +70,7 @@ use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WeatherCommand;
 use pocketmine\command\defaults\WhitelistCommand;
 use pocketmine\command\defaults\XpCommand;
+use pocketmine\command\defaults\ClearCommand;
 
 use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
@@ -106,6 +107,7 @@ class SimpleCommandMap implements CommandMap {
 
     private function setDefaultCommands() {
         $this->register("pocketmine", new WeatherCommand("weather"));
+		$this->register("pocketmine", new ClearCommand("clear"));
 
         $this->register("pocketmine", new BanIpByNameCommand("banipbyname"));
         $this->register("pocketmine", new BanCidByNameCommand("bancidbyname"));
