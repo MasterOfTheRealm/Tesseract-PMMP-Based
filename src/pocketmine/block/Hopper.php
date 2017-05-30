@@ -64,6 +64,7 @@ class Hopper extends Transparent{
 					$player->getServer()->getLogger()->debug($player->getName() . " attempted to open a locked hopper");
 					return true;
 				}
+                if($player->getServer()->limitedCreative and $player->isCreative()) return true;
 				$player->addWindow($t->getInventory());
 			}
 		}
