@@ -451,6 +451,7 @@ namespace pocketmine {
     }
 
     if(PHP_INT_SIZE < 8){
+        $logger->warning("Running Tesseract with 32-bit systems/PHP is deprecated. Support for 32-bit may be dropped in the future.");
     }
 
 
