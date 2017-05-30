@@ -290,7 +290,6 @@ class Server {
     public $advancedCommandSelector = false;
     public $enchantingTableEnabled = true;
     public $countBookshelf = false;
-    public $allowInventoryCheats = false;
     public $raklibDisable = false;
     public $checkMovement = true;
     public $antiFly = true;
@@ -1464,7 +1463,6 @@ class Server {
         $this->enchantingTableEnabled = $this->getAdvancedProperty("enchantment.enable-enchanting-table", true);
         $this->countBookshelf = $this->getAdvancedProperty("enchantment.count-bookshelf", false);
         $this->raklibDisable = $this->getAdvancedProperty("network.raklib-disable", false);
-        $this->allowInventoryCheats = $this->getAdvancedProperty("inventory.allow-cheats", false);
         $this->checkMovement = $this->getAdvancedProperty("anticheat.check-movement", true);
         $this->allowInstabreak = $this->getAdvancedProperty("anticheat.allow-instabreak", true);
         $this->antiFly = $this->getAdvancedProperty("anticheat.anti-fly", true);
