@@ -24,6 +24,7 @@ namespace pocketmine;
 use pocketmine\network\protocol\Info;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginLoadOrder;
+use pocketmine\plugin\PluginManager;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
 use raklib\RakLib;
@@ -90,7 +91,7 @@ class CrashDump {
     }
 
     private function pluginsData() {
-        if (class_exists("pocketmine\\plugin\\PluginManager", false)) {
+        if($this->server->getPluginManager() instanceof PluginManager){
             $this->addLine();
             $this->addLine("Loaded plugins:");
             $this->data["plugins"] = [];
@@ -228,6 +229,7 @@ class CrashDump {
     private function generalData() {
         $version = new VersionString();
         $this->data["general"] = [];
+        $this->data["general"]["name"] = $this->server->getName();
         $this->data["general"]["protocol"] = Info::CURRENT_PROTOCOL;
         $this->data["general"]["api"] = \pocketmine\API_VERSION;
         $this->data["general"]["git"] = \pocketmine\GIT_COMMIT;
@@ -237,7 +239,7 @@ class CrashDump {
         $this->data["general"]["zend"] = zend_version();
         $this->data["general"]["php_os"] = PHP_OS;
         $this->data["general"]["os"] = Utils::getOS();
-        $this->addLine("Tesseract version: " . \pocketmine\GIT_COMMIT . " [Protocol " . Info::CURRENT_PROTOCOL . "; API " . API_VERSION . "]");
+        $this->addLine($this->server->getName() . " version: " . \pocketmine\GIT_COMMIT . " [Protocol " . Info::CURRENT_PROTOCOL . "; API " . API_VERSION . "]");
         $this->addLine("uname -a: " . php_uname("a"));
         $this->addLine("PHP version: " . phpversion());
         $this->addLine("Zend version: " . zend_version());

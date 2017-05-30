@@ -21,6 +21,7 @@
 
 namespace pocketmine\event\player;
 
+use pocketmine\event\TranslationContainer;
 use pocketmine\Player;
 
 /**
@@ -30,14 +31,12 @@ class PlayerQuitEvent extends PlayerEvent {
 
     public static $handlerList = null;
 
-    /** @var string */
+    /** @var TranslationContainer|string */
     protected $quitMessage;
-    protected $autoSave = true;
 
-    public function __construct(Player $player, $quitMessage, $autoSave = true) {
+    public function __construct(Player $player, $quitMessage) {
         $this->player = $player;
         $this->quitMessage = $quitMessage;
-        $this->autoSave = $autoSave;
     }
 
     public function setQuitMessage($quitMessage) {
@@ -46,13 +45,5 @@ class PlayerQuitEvent extends PlayerEvent {
 
     public function getQuitMessage() {
         return $this->quitMessage;
-    }
-
-    public function getAutoSave() {
-        return $this->autoSave;
-    }
-
-    public function setAutoSave($value = true) {
-        $this->autoSave = (bool)$value;
     }
 }

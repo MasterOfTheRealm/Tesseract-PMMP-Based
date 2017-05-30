@@ -32,6 +32,7 @@ use pocketmine\inventory\PlayerInventory;
 use pocketmine\inventory\SimpleTransactionQueue;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item as ItemItem;
+use pocketmine\level\Level;
 use pocketmine\math\Math;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteTag;
@@ -75,13 +76,21 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
     public $eyeHeight = 1.62;
 
     protected $skinId;
-    protected $skin;
+    protected $skin = null;
 
     protected $foodTickTimer = 0;
 
     protected $totalXp = 0;
     protected $xpSeed;
     protected $xpCooldown = 0;
+
+    public function __construct(Level $level, CompoundTag $nbt) {
+        if ($this->skin === null and (!isset($nbt->Skin) or !isset($nbt->Skin->Data) or !Player::isValidSkin($nbt->Skin->Data->getValue()))) {
+            throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
+        }
+
+    parent::__construct($level, $nbt);
+ 	}
 
     public function getSkinData() {
         return $this->skin;
@@ -110,6 +119,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
      * @param string $skinId
      */
     public function setSkin($str, $skinId) {
+        if(!Player::isValidSkin($str)){
+            throw new \InvalidStateException("Specified skin is not valid, must be 8KiB or 16KiB");
+ 		}
         $this->skin = $str;
         $this->skinId = $skinId;
     }
@@ -586,14 +598,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
     }
 
     public function getDrops() {
-        $drops = [];
-        if ($this->inventory !== null) {
-            foreach ($this->inventory->getContents() as $item) {
-                $drops[] = $item;
-            }
-        }
-
-        return $drops;
+        return $this->inventory !== null ? array_values($this->inventory->getContents()) : [];
     }
 
     public function saveNBT() {
@@ -659,7 +664,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder {
     }
 
     public function spawnTo(Player $player) {
-        if (strlen($this->skin) < 64 * 32 * 4) {
+        if(!Player::isValidSkin($this->skin)){
             $e = new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
             $this->server->getLogger()->logException($e);
             $this->close();

@@ -157,6 +157,10 @@ class Anvil extends McRegion {
         return "anvil";
     }
 
+    public static function getPcWorldFormatVersion() : int{
+        return 19133;
+    }
+
     public function getWorldHeight(): int {
         //TODO: add world height options
         return 256;

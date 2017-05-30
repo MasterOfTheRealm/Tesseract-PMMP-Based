@@ -287,6 +287,16 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         return false;
     }
 
+    public static function isValidSkin(string $skin) : bool{
+        return strlen($skin) === 64 * 64 * 4 or strlen($skin) === 64 * 32 * 4;
+    }
+
+    public function isValidUserName(string $name): bool{
+        $lname = strtolower($name);
+        $len = strlen($name);
+        return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_]/", $name) === 0;
+    }
+
     public function getDeviceModel() {
         return $this->deviceModel;
     }
@@ -1226,9 +1236,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $pk->y = $this->y;
                 $pk->z = $this->z;
                 $this->dataPacket($pk);
-                $pk1 = new PlayStatusPacket();
-                $pk1->status = PlayStatusPacket::PLAYER_SPAWN;
-                $this->dataPacket($pk1);
+
+                $this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
             }
             $targetLevel->getWeather()->sendWeather($this);
 
@@ -1365,9 +1374,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         $pk->z = $pos->z;
         $this->dataPacket($pk);
 
-        $pk = new PlayStatusPacket();
-        $pk->status = PlayStatusPacket::PLAYER_SPAWN;
-        $this->dataPacket($pk);
+        $this->sendPlayStatus(PlayStatusPacket::PLAYER_SPAWN);
 
         $this->noDamageTicks = 60;
 
@@ -2248,10 +2255,18 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
         return ($dot1 - $dot) >= -$maxDiff;
     }
 
-    public function onPlayerPreLogin() {
+    public function sendPlayStatus(int $status, bool $immediate = false){
         $pk = new PlayStatusPacket();
-        $pk->status = PlayStatusPacket::LOGIN_SUCCESS;
-        $this->dataPacket($pk);
+        $pk->status = $status;
+        if($immediate){
+            $this->directDataPacket($pk);
+        }else{
+            $this->dataPacket($pk);
+        }
+    }
+
+    public function onPlayerPreLogin() {
+        $this->sendPlayStatus(PlayStatusPacket::LOGIN_SUCCESS);
 
         $this->processLogin();
     }
@@ -2490,6 +2505,8 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     break;
                 }
 
+                $this->sendPlayStatus(PlayStatusPacket::LOGIN_SUCCESS, true);
+
                 $this->username = TextFormat::clean($packet->username);
                 $this->displayName = $this->username;
                 $this->setNameTag($this->username);
@@ -2512,15 +2529,10 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     if ($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL) {
                         $message = "disconnectionScreen.outdatedClient";
 
-                        $pk = new PlayStatusPacket();
-                        $pk->status = PlayStatusPacket::LOGIN_FAILED_CLIENT;
-                        $this->directDataPacket($pk);
+                        $this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_CLIENT, true);
                     } else {
                         $message = "disconnectionScreen.outdatedServer";
-
-                        $pk = new PlayStatusPacket();
-                        $pk->status = PlayStatusPacket::LOGIN_FAILED_SERVER;
-                        $this->directDataPacket($pk);
+                        $this->sendPlayStatus(PlayStatusPacket::LOGIN_FAILED_SERVER, true);
                     }
                     $this->close("", $message, false);
 
@@ -2532,31 +2544,14 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                 $this->uuid = UUID::fromString($packet->clientUUID);
                 $this->rawUUID = $this->uuid->toBinary();
 
-                $valid = true;
-                $len = strlen($packet->username);
-                if ($len > 16 or $len < 3) {
-                    $valid = false;
-                }
-                for ($i = 0; $i < $len and $valid; ++$i) {
-                    $c = ord($packet->username{$i});
-                    if (($c >= ord("a") and $c <= ord("z")) or ($c >= ord("A") and $c <= ord("Z")) or ($c >= ord("0") and $c <= ord("9")) or $c === ord("_")) {
-                        continue;
-                    }
-
-                    $valid = false;
-                    break;
-                }
-
-                if (!$valid or $this->iusername === "rcon" or $this->iusername === "console") {
+                if(!Player::isValidUserName($packet->username)){
                     $this->close("", "disconnectionScreen.invalidName");
-
-                    break;
+                    return true;
                 }
 
-                if ((strlen($packet->skin) != 64 * 64 * 4) and (strlen($packet->skin) != 64 * 32 * 4)) {
+                if(!Player::isValidSkin($packet->skin)){
                     $this->close("", "disconnectionScreen.invalidSkin");
-
-                    break;
+                    return true;
                 }
 
                 $this->setSkin($packet->skin, $packet->skinId);
@@ -2567,10 +2562,6 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
                     break;
                 }
-
-                $pk = new PlayStatusPacket();
-                $pk->status = PlayStatusPacket::LOGIN_SUCCESS;
-                $this->directDataPacket($pk);
 
                 //TODO: Add resource packs.
                 $this->dataPacket(new ResourcePacksInfoPacket());
@@ -4062,7 +4053,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             }
 
             $this->namedtag["playerGameType"] = $this->gamemode;
-            $this->namedtag["lastPlayed"] = new LongTag("lastPlayed", floor(microtime(true) * 1000));
+            $this->namedtag["lastPlayed"] = floor(microtime(true) * 1000);
             $this->namedtag["Health"] = new ShortTag("Health", $this->getHealth());
             $this->namedtag["MaxHealth"] = new ShortTag("MaxHealth", $this->getMaxHealth());
 

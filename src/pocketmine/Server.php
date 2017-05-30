@@ -33,6 +33,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\HandlerList;
 use pocketmine\event\level\LevelInitEvent;
 use pocketmine\event\level\LevelLoadEvent;
+use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\event\server\ServerCommandEvent;
 use pocketmine\event\Timings;
@@ -102,8 +103,6 @@ use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
-
-//TODO use pocketmine\level\generator\ender\Ender;
 
 
 /**
@@ -811,8 +810,6 @@ class Server {
         $nbt->Motion->setTagType(NBT::TAG_Double);
         $nbt->Rotation->setTagType(NBT::TAG_Float);
 
-        $this->saveOfflinePlayerData($name, $nbt);
-
         return $nbt;
 
     }
@@ -823,10 +820,15 @@ class Server {
      * @param bool $async
      */
     public function saveOfflinePlayerData($name, CompoundTag $nbtTag, $async = false) {
-        if ($this->shouldSavePlayerData()) {
+        $ev = new PlayerDataSaveEvent($nbtTag, $name);
+        $ev->setCancelled(!$this->shouldSavePlayerData());
+
+        $this->pluginManager->callEvent($ev);
+
+        if(!$ev->isCancelled()){
             $nbt = new NBT(NBT::BIG_ENDIAN);
             try {
-                $nbt->setData($nbtTag);
+                $nbt->setData($ev->getSaveData());
 
                 if ($async) {
                     $this->getScheduler()->scheduleAsyncTask(new FileWriteTask($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed()));
@@ -2210,8 +2212,10 @@ class Server {
                 UPnP::RemovePortForward($this->getPort());
             }
 
-            $this->getLogger()->debug("Disabling all plugins");
-            $this->pluginManager->disablePlugins();
+            if($this->pluginManager instanceof PluginManager) {
+                $this->getLogger()->debug("Disabling all plugins");
+                $this->pluginManager->disablePlugins();
+            }
 
             foreach ($this->players as $player) {
                 $player->close($player->getLeaveMessage(), $this->getProperty("settings.shutdown-message", "Server closed"));
@@ -2361,14 +2365,12 @@ class Server {
         try {
             $dump = new CrashDump($this);
         } catch (\Throwable $e) {
+            $this->logger->logException($e);
             $this->logger->critical($this->getLanguage()->translateString("pocketmine.crash.error", $e->getMessage()));
             return;
         }
 
         $this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.submit", [$dump->getPath()]));
-
-        //$this->checkMemory();
-        //$dump .= "Memory Usage Tracking: \r\n" . chunk_split(base64_encode(gzdeflate(implode(";", $this->memoryStats), 9))) . "\r\n";
 
         $this->forceShutdown();
         $this->isRunning = false;

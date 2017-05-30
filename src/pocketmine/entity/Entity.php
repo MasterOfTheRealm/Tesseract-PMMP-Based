@@ -415,13 +415,28 @@ abstract class Entity extends Location implements Metadatable {
         return $this->length;
     }
 
-    //add original function (set scale etc)
-    public function setScale($scale) {
-        $this->setDataProperty(self::DATA_SCALE, self::DATA_TYPE_FLOAT, $scale);
+    public function setScale(float $value){
+        $multiplier = $value / $this->getScale();
+
+        $this->width *= $multiplier;
+        $this->height *= $multiplier;
+        $this->eyeHeight *= $multiplier;
+        $halfWidth = $this->width / 2;
+
+        $this->boundingBox->setBounds(
+            $this->x - $halfWidth,
+            $this->y,
+            $this->z - $halfWidth,
+            $this->x + $halfWidth,
+            $this->y + $this->height,
+            $this->z + $halfWidth
+        );
+
+        $this->setDataProperty(self::DATA_SCALE, self::DATA_TYPE_FLOAT, $value);
     }
 
-    public function getScale() {
-        $this->getDataProperty(self::DATA_SCALE, self::DATA_TYPE_FLOAT);
+    public function getScale() : float{
+        $this->getDataProperty(self::DATA_SCALE);
     }
 
     /**
