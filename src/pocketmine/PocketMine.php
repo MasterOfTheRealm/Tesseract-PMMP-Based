@@ -75,7 +75,7 @@ namespace pocketmine {
     use pocketmine\wizard\Installer;
 
     const VERSION = "1.3.0";
-    const API_VERSION = "3.0.2";
+    const API_VERSION = "3.0.0-ALPHA3";
     const CODENAME = "Unity";
 
     /*
