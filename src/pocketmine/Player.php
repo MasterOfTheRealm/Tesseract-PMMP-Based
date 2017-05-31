@@ -1411,15 +1411,13 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
                     $item = $entity->getItem();
 
                     if ($item instanceof Item) {
-                        $add = false;
-//end2				
+                        $add = false;			
 			if (!$this->server->allowInventoryCheats and !$this->isCreative()) {		
- -                            if (!$this->getFloatingInventory()->canAddItem($item) or !$this->inventory->canAddItem($item)) {		
- -                                continue;		
- -                            }		
- -                            $add = true;		
- -                        }
-//start2
+                             if (!$this->getFloatingInventory()->canAddItem($item) or !$this->inventory->canAddItem($item)) {		
+                                 continue;		
+                            }		
+                             $add = true;		
+                         }
                         $this->server->getPluginManager()->callEvent($ev = new InventoryPickupItemEvent($this->inventory, $entity));
                         if ($ev->isCancelled()) {
                             continue;
