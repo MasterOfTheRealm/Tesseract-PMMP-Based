@@ -1382,7 +1382,7 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
 
             if ($entity instanceof Arrow and $entity->hadCollision) {
              	$item = Item::get(Item::ARROW, $entity->getPotionId(), 1);
-
+			}
                
 			$add = false;
 			if (!$this->server->allowInventoryCheats and !$this->isCreative()) {		
