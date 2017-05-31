@@ -1381,19 +1381,17 @@ class Player extends Human implements CommandSender, InventoryHolder, ChunkLoade
             }
 
             if ($entity instanceof Arrow and $entity->hadCollision) {
-                $item = Item::get(Item::ARROW, $entity->getPotionId(), 1);
+             	$item = Item::get(Item::ARROW, $entity->getPotionId(), 1);
 
-                $add = false;
-//end
+               
+			$add = false;
 			if (!$this->server->allowInventoryCheats and !$this->isCreative()) {		
                 if (!$this->getFloatingInventory()->canAddItem($item) or !$this->inventory->canAddItem($item)) {		
- -              //The item is added to the floating inventory to allow client to handle the pickup		
-                //We have to also check if it can be added to the real inventory before sending packets.		
-                		
-                     }		
+                //The item is added to the floating inventory to allow client to handle the pickup		
+                //We have to also check if it can be added to the real inventory before sending packets.			
                      $add = true;		
                  }
-//start				 
+				
                 $this->server->getPluginManager()->callEvent($ev = new InventoryPickupArrowEvent($this->inventory, $entity));
                 if ($ev->isCancelled()) {
                     continue;
