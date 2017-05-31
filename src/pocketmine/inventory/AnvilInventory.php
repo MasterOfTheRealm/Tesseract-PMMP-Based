@@ -62,6 +62,12 @@ class AnvilInventory extends TemporaryInventory {
         $player->takeXpLevel($resultItem->getRepairCost());
 
         $this->clearAll();
+		       if (!$player->getServer()->allowInventoryCheats and !$player->isCreative()) {		
+          if (!$player->getFloatingInventory()->canAddItem($resultItem)) {		
+               return false;		
+             }		
+           $player->getFloatingInventory()->addItem($resultItem);		
+         }
         return true;
     }
 
@@ -83,6 +89,14 @@ class AnvilInventory extends TemporaryInventory {
             $player->takeXpLevel($resultItem->getRepairCost());
 
             $this->clearAll();
+			
+            if (!$player->getServer()->allowInventoryCheats and !$player->isCreative()) {		
+            if (!$player->getFloatingInventory()->canAddItem($resultItem)) {		
+                     return false;		
+                 }		
+                 $player->getFloatingInventory()->addItem($resultItem);		
+             }
+			
         }
     }
 
