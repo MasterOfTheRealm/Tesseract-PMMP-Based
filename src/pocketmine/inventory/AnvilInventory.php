@@ -121,4 +121,3 @@ class AnvilInventory extends TemporaryInventory{
 	}
 
 }
- 
