@@ -24,7 +24,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\NetworkSession;
 
 class LoginPacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::LOGIN_PACKET;
