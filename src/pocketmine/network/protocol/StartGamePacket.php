@@ -27,7 +27,7 @@ namespace pocketmine\network\protocol;
 use pocketmine\network\NetworkSession;
 
 class StartGamePacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
+	const NETWORK_ID = Info::START_GAME_PACKET;
 
 	public $entityUniqueId;
 	public $entityRuntimeId;
