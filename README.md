@@ -12,7 +12,7 @@ Contact us on [TWITTER](http://www.twitter.com/TesseractPHP) for support**
 
 ## Notice
 
-**Tesseract is supported to Minecraft:PE 1.0.7, 1.0.8, 1.0.9, & [1.1.0](https://github.com/TesseractTeam/Tesseract/tree/MCPE-1.1-Beta)  (PE & Win10) <br>
+**Tesseract is supported to Minecraft:PE 1.1.0 (PE & Win10) <br>
 Report any issues and we will try to fix them for you.**  <br>
 
 ## Builds
