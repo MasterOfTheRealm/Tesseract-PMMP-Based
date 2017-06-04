@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\network\NetworkSession;
 
 class LoginPacket extends DataPacket{
-	const NETWORK_ID = ProtocolInfo::LOGIN_PACKET;
+	const NETWORK_ID = Info::LOGIN_PACKET;
 
 	const EDITION_POCKET = 0;
 
@@ -51,7 +51,7 @@ class LoginPacket extends DataPacket{
 	public function decode(){
 		$this->protocol = $this->getInt();
 
-		if($this->protocol !== ProtocolInfo::CURRENT_PROTOCOL){
+		if($this->protocol !== Info::CURRENT_PROTOCOL){
 			$this->buffer = null;
 			return; //Do not attempt to decode for non-accepted protocols
 		}
