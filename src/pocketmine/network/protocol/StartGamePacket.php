@@ -19,12 +19,12 @@
  *
 */
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\protocol;
 
 #include <rules/DataPacket.h>
 
 
-use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\NetworkSession;
 
 class StartGamePacket extends DataPacket{
 	const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
