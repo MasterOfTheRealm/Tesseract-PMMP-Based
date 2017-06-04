@@ -33,6 +33,7 @@ interface Info {
      */
 
     const CURRENT_PROTOCOL = 113;
+	const ACCEPTED_PROTOCOLS = [106,117];
     const MINECRAFT_VERSION = "v1.1.0.55";
     const MINECRAFT_VERSION_NETWORK = "1.1.0.55";
 
