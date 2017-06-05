@@ -1,5 +1,5 @@
 ![Tesseract](http://i.imgur.com/1ga0ATy.jpg)
-
+** DO NOT SUGGEST TO USE PMMP, THIS WILL RESULT IN BAN
 ## Tesseract Introduction
 -------------
 **Tesseract is the advanced server software based on PocketMine-MP and Genisys! <br>
