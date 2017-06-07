@@ -13,10 +13,10 @@ Use the 'version' command in Tesseract.
 If the version is invalid, the issue will be CLOSED and marked as spam! 
 NOTE: If you are using WINDOWS 10 Edition, please remember to let us know!
 -->
-* Tesseract:
+* Tesseract Version: 1.3.0 Unity
 * PHP:
 * Server OS:
-* Game version: 
+* Game version: 1.1.x
 * Server host:
 <!--- 
 Explain what your server is being hosted on. Examples: Home computer, EnderCrate, VirtualGladiators, etc. 
