@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -24,10 +24,9 @@ namespace pocketmine\block;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\item\Tool;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\level\Level;
+use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\Server;
 
 class Leaves extends Transparent{
 	const OAK = 0;
@@ -36,16 +35,15 @@ class Leaves extends Transparent{
 	const JUNGLE = 3;
 	const ACACIA = 0;
 	const DARK_OAK = 1;
-	
-	const WOOD_TYPE = self::WOOD;
 
 	protected $id = self::LEAVES;
+	protected $woodType = self::LOG;
 
 	public function __construct($meta = 0){
 		$this->meta = $meta;
 	}
 
-	public function getHardness() {
+	public function getHardness(){
 		return 0.2;
 	}
 
@@ -53,15 +51,7 @@ class Leaves extends Transparent{
 		return Tool::TYPE_SHEARS;
 	}
 
-	public function getBurnChance() : int{
-		return 30;
-	}
-
-	public function getBurnAbility() : int{
-		return 60;
-	}
-
-	public function getName() : string{
+	public function getName(){
 		static $names = [
 			self::OAK => "Oak Leaves",
 			self::SPRUCE => "Spruce Leaves",
@@ -71,18 +61,22 @@ class Leaves extends Transparent{
 		return $names[$this->meta & 0x03];
 	}
 
-	private function findLog(Block $pos, array $visited, $distance, &$check, $fromSide = null){
+	public function diffusesSkyLight() : bool{
+		return true;
+	}
+
+	protected function findLog(Block $pos, array $visited, $distance, &$check, $fromSide = null){
 		++$check;
 		$index = $pos->x . "." . $pos->y . "." . $pos->z;
 		if(isset($visited[$index])){
 			return false;
 		}
-		if($pos->getId() === static::WOOD_TYPE){
+		if($pos->getId() === $this->woodType){
 			return true;
 		}elseif($pos->getId() === $this->id and $distance < 3){
 			$visited[$index] = true;
-			$down = $pos->getSide(0)->getId();
-			if($down === static::WOOD_TYPE){
+			$down = $pos->getSide(Vector3::SIDE_DOWN)->getId();
+			if($down === $this->woodType){
 				return true;
 			}
 			if($fromSide === null){
@@ -93,39 +87,39 @@ class Leaves extends Transparent{
 				}
 			}else{ //No more loops
 				switch($fromSide){
-					case 2:
-						if($this->findLog($pos->getSide(2), $visited, $distance + 1, $check, $fromSide) === true){
+					case Vector3::SIDE_NORTH:
+						if($this->findLog($pos->getSide(Vector3::SIDE_NORTH), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						}elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(Vector3::SIDE_WEST), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						}elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}
-						break;
-					case 3:
-						if($this->findLog($pos->getSide(3), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $check, $fromSide) === true){
-							return true;
-						}elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(Vector3::SIDE_EAST), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
 						}
 						break;
-					case 4:
-						if($this->findLog($pos->getSide(2), $visited, $distance + 1, $check, $fromSide) === true){
+					case Vector3::SIDE_SOUTH:
+						if($this->findLog($pos->getSide(Vector3::SIDE_SOUTH), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						}elseif($this->findLog($pos->getSide(3), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(Vector3::SIDE_WEST), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						}elseif($this->findLog($pos->getSide(4), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(Vector3::SIDE_EAST), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
 						}
 						break;
-					case 5:
-						if($this->findLog($pos->getSide(2), $visited, $distance + 1, $check, $fromSide) === true){
+					case Vector3::SIDE_WEST:
+						if($this->findLog($pos->getSide(Vector3::SIDE_NORTH), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						}elseif($this->findLog($pos->getSide(3), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(Vector3::SIDE_SOUTH), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
-						}elseif($this->findLog($pos->getSide(5), $visited, $distance + 1, $check, $fromSide) === true){
+						}elseif($this->findLog($pos->getSide(Vector3::SIDE_WEST), $visited, $distance + 1, $check, $fromSide) === true){
+							return true;
+						}
+						break;
+					case Vector3::SIDE_EAST:
+						if($this->findLog($pos->getSide(Vector3::SIDE_NORTH), $visited, $distance + 1, $check, $fromSide) === true){
+							return true;
+						}elseif($this->findLog($pos->getSide(Vector3::SIDE_SOUTH), $visited, $distance + 1, $check, $fromSide) === true){
+							return true;
+						}elseif($this->findLog($pos->getSide(Vector3::SIDE_EAST), $visited, $distance + 1, $check, $fromSide) === true){
 							return true;
 						}
 						break;
@@ -148,7 +142,7 @@ class Leaves extends Transparent{
 				$visited = [];
 				$check = 0;
 
-				Server::getInstance()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
+				$this->getLevel()->getServer()->getPluginManager()->callEvent($ev = new LeavesDecayEvent($this));
 
 				if($ev->isCancelled() or $this->findLog($this, $visited, 0, $check) === true){
 					$this->getLevel()->setBlock($this, $this, false, false);
@@ -168,22 +162,19 @@ class Leaves extends Transparent{
 		$this->getLevel()->setBlock($this, $this, true);
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item){
 		$drops = [];
-		if($item->isShears() or $item->getEnchantmentLevel(Enchantment::SILK_TOUCH) > 0){
-			$drops[] = [$this->id, $this->meta & 0x03, 1];
+		if($item->isShears()){
+			$drops[] = Item::get($this->id, $this->meta & 0x03, 1);
 		}else{
-			$fortunel = $item->getEnchantmentLevel(Enchantment::FORTUNE);
-			$fortunel = min(3, $fortunel);
-			$rates = [20,16,12,10];
-			if(mt_rand(1, $rates[$fortunel]) === 1){ //Saplings
-				$drops[] = [Item::SAPLING, $this->meta & 0x03, 1];
+			if(mt_rand(1, 20) === 1){ //Saplings
+				$drops[] = Item::get(Item::SAPLING, $this->meta & 0x03, 1);
 			}
-			$rates = [200,180,160,120];
-			if(($this->meta & 0x03) === self::OAK and mt_rand(1, $rates[$fortunel]) === 1){ //Apples
-				$drops[] = [Item::APPLE, 0, 1];
+			if(($this->meta & 0x03) === self::OAK and mt_rand(1, 200) === 1){ //Apples
+				$drops[] = Item::get(Item::APPLE, 0, 1);
 			}
 		}
+
 		return $drops;
 	}
 }

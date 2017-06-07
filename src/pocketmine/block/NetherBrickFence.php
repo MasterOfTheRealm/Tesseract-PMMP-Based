@@ -16,11 +16,12 @@
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
  *
- */
-
+ *
+*/
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 
 class NetherBrickFence extends Transparent{
@@ -31,26 +32,15 @@ class NetherBrickFence extends Transparent{
 		$this->meta = $meta;
 	}
 
-	public function getBreakTime(Item $item){
-		if($item instanceof Air){
-			//Breaking by hand
-			return 10;
-		}else{
-			// Other breaktimes are equal to woodfences.
-			return parent::getBreakTime($item);
-		}
-	}
-
 	public function getHardness(){
 		return 2;
 	}
 
 	public function getToolType(){
-		//Different then the woodfences
 		return Tool::TYPE_PICKAXE;
 	}
 
-	public function getName() : string{
+	public function getName(){
 		return "Nether Brick Fence";
 	}
 
@@ -58,10 +48,10 @@ class NetherBrickFence extends Transparent{
 		return ($block instanceof NetherBrickFence) or ($block->isSolid() and !$block->isTransparent());
 	}
 
-	public function getDrops(Item $item) : array {
-		if($item->isPickaxe() >= Tool::TIER_WOODEN){
+	public function getDrops(Item $item){
+		if($item->isPickaxe() >= TieredTool::TIER_WOODEN){
 			return [
-				[Item::NETHER_BRICK_FENCE, $this->meta, 1],
+				Item::get($this->id, $this->meta, 1)
 			];
 		}else{
 			return [];

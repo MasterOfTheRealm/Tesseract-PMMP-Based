@@ -21,11 +21,15 @@
 
 namespace pocketmine\entity;
 
+use pocketmine\block\Block;
+use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
+use pocketmine\item\Consumable;
+use pocketmine\item\FoodSource;
 use pocketmine\item\Item as ItemItem;
 use pocketmine\level\Level;
 use pocketmine\nbt\NBT;
@@ -36,7 +40,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
 
@@ -232,6 +236,25 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $ev->getAmount();
 	}
 
+	/**
+	 * @param Consumable $consumable
+	 *
+	 * @return mixed|Block|Consumable|ItemItem
+	 */
+	public function consume(Consumable $consumable){
+		if(($result = parent::consume($consumable)) !== $consumable){
+			if($consumable instanceof FoodSource){
+				if($consumable->requiresHunger() and !($this->getFood() < $this->getMaxFood())){
+					return $consumable;
+				}
+				$this->addFood($consumable->getFoodRestore());
+				$this->addSaturation($consumable->getSaturationRestore());
+			}
+		}
+
+		return $result;
+	}
+
 	public function getXpLevel() : int{
 		return (int) $this->attributeMap->getAttribute(Attribute::EXPERIENCE_LEVEL)->getValue();
 	}
@@ -272,6 +295,22 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	public function getInventory(){
 		return $this->inventory;
+	}
+
+	/**
+	 * Returns whether this entity is currently using its held item.
+	 * @return bool
+	 */
+	public function isUsingItem() : bool{
+		return $this->getDataFlag(self::DATA_FLAGS, self::DATA_FLAG_USINGITEM);
+	}
+
+	/**
+	 * Sets whether this entity is currently using its held item.
+	 * @param bool $value
+	 */
+	public function setUsingItem(bool $value = true){
+		$this->setDataFlag(self::DATA_FLAGS, self::DATA_FLAG_USINGITEM, $value);
 	}
 
 	protected function initEntity(){
@@ -371,7 +410,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->attributeMap->addAttribute(Attribute::getAttribute(Attribute::EXPERIENCE));
 	}
 
-	public function entityBaseTick($tickDiff = 1, $enchantL = 0){
+	public function entityBaseTick($tickDiff = 1){
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		$this->doFoodTick($tickDiff);
@@ -395,19 +434,19 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					$this->addFood(1.0);
 				}
 				if($this->foodTickTimer % 20 === 0 and $health < $this->getMaxHealth()){
-					$this->heal(1, new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
+					$this->heal(new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
 				}
 			}
 
 			if($this->foodTickTimer === 0){
 				if($food >= 18){
 					if($health < $this->getMaxHealth()){
-						$this->heal(1, new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
+						$this->heal(new EntityRegainHealthEvent($this, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
 						$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
 					}
 				}elseif($food <= 0){
 					if(($difficulty === 1 and $health > 10) or ($difficulty === 2 and $health > 1) or $difficulty === 3){
-						$this->attack(1, new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
+						$this->attack(new EntityDamageEvent($this, EntityDamageEvent::CAUSE_STARVATION, 1));
 					}
 				}
 			}

@@ -27,23 +27,32 @@ use pocketmine\Player;
 /**
  * Called when a player leaves the server
  */
-class PlayerQuitEvent extends PlayerEvent {
+class PlayerQuitEvent extends PlayerEvent{
+	public static $handlerList = null;
 
-    public static $handlerList = null;
+	/** @var TranslationContainer|string */
+	protected $quitMessage;
 
-    /** @var TranslationContainer|string */
-    protected $quitMessage;
+	/**
+	 * @param Player                      $player
+	 * @param TranslationContainer|string $quitMessage
+	 */
+	public function __construct(Player $player, $quitMessage){
+		$this->player = $player;
+		$this->quitMessage = $quitMessage;
+	}
 
-    public function __construct(Player $player, $quitMessage) {
-        $this->player = $player;
-        $this->quitMessage = $quitMessage;
-    }
+	/**
+	 * @param TranslationContainer|string $quitMessage
+	 */
+	public function setQuitMessage($quitMessage){
+		$this->quitMessage = $quitMessage;
+	}
 
-    public function setQuitMessage($quitMessage) {
-        $this->quitMessage = $quitMessage;
-    }
-
-    public function getQuitMessage() {
-        return $this->quitMessage;
-    }
+	/**
+	 * @return TranslationContainer|string
+	 */
+	public function getQuitMessage(){
+		return $this->quitMessage;
+	}
 }

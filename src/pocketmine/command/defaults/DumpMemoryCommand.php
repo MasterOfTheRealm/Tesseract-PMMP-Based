@@ -22,29 +22,35 @@
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
-use pocketmine\command\Command;
 
+class DumpMemoryCommand extends VanillaCommand{
 
-class DumpMemoryCommand extends VanillaCommand {
+	private static $executions = 0;
 
-    public function __construct($name) {
-        parent::__construct(
-            $name,
-            "Dumps the memory",
-            "/$name [path]"
-        );
-        $this->setPermission("pocketmine.command.dumpmemory");
-    }
+	public function __construct($name){
+		parent::__construct(
+			$name,
+			"Dumps the memory",
+			"/$name <TOKEN (run once to get it)> [path]"
+		);
+		$this->setPermission("pocketmine.command.dumpmemory");
+	}
 
-    public function execute(CommandSender $sender, $currentAlias, array $args) {
-        if (!$this->testPermission($sender)) {
-            return true;
-        }
+	public function execute(CommandSender $sender, $currentAlias, array $args){
+		if(!$this->testPermission($sender)){
+			return true;
+		}
 
-        Command::broadcastCommandMessage($sender, "Dumping server memory");
+		$token = strtoupper(substr(sha1(BOOTUP_RANDOM . ":" . $sender->getServer()->getServerUniqueId() . ":" . self::$executions), 6, 6));
 
-        $sender->getServer()->getMemoryManager()->dumpServerMemory(isset($args[0]) ? $args[0] : $sender->getServer()->getDataPath() . "/memory_dumps/memoryDump_" . date("D_M_j-H.i.s-T_Y", time()), 48, 80);
-        return true;
-    }
+		if(count($args) < 1 or strtoupper($args[0]) !== $token){
+			$sender->sendMessage("Usage: /" . $this->getName() . " " . $token);
+			return true;
+		}
 
+		++self::$executions;
+
+		$sender->getServer()->getMemoryManager()->dumpServerMemory(isset($args[1]) ? $args[1] : $sender->getServer()->getDataPath() . "/memoryDump_$token", 48, 80);
+		return true;
+	}
 }

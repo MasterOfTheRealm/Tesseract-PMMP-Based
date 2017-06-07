@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  *  ____            _        _   __  __ _                  __  __ ____
@@ -26,49 +27,51 @@ use pocketmine\inventory\Recipe;
 use pocketmine\item\Item;
 use pocketmine\Player;
 
-class CraftItemEvent extends Event implements Cancellable {
+class CraftItemEvent extends Event implements Cancellable{
+	public static $handlerList = null;
 
-    public static $handlerList = null;
-    /** @var Item[] */
-    private $input = [];
-    /** @var Recipe */
-    private $recipe;
-    /** @var \pocketmine\Player */
-    private $player;
+	/** @var Item[] */
+	private $input = [];
+	/** @var Recipe */
+	private $recipe;
+	/** @var \pocketmine\Player */
+	private $player;
 
-    /**
-     * @param \pocketmine\Player $player
-     * @param Item[] $input
-     * @param Recipe $recipe
-     */
-    public function __construct(Player $player, array $input, Recipe $recipe) {
-        $this->player = $player;
-        $this->input = $input;
-        $this->recipe = $recipe;
-    }
 
-    /**
-     * @return Item[]
-     */
-    public function getInput() {
-        $items = [];
-        foreach ($this->input as $i => $item) {
-            $items[$i] = clone $item;
-        }
-        return $items;
-    }
+	/**
+	 * @param \pocketmine\Player $player
+	 * @param Item[]             $input
+	 * @param Recipe             $recipe
+	 */
+	public function __construct(Player $player, array $input, Recipe $recipe){
+		$this->player = $player;
+		$this->input = $input;
+		$this->recipe = $recipe;
+	}
 
-    /**
-     * @return Recipe
-     */
-    public function getRecipe() {
-        return $this->recipe;
-    }
+	/**
+	 * @return Item[]
+	 */
+	public function getInput(){
+		$items = [];
+		foreach($this->input as $i => $item){
+			$items[$i] = clone $item;
+		}
 
-    /**
-     * @return \pocketmine\Player
-     */
-    public function getPlayer() {
-        return $this->player;
-    }
+		return $items;
+	}
+
+	/**
+	 * @return Recipe
+	 */
+	public function getRecipe(){
+		return $this->recipe;
+	}
+
+	/**
+	 * @return \pocketmine\Player
+	 */
+	public function getPlayer(){
+		return $this->player;
+	}
 }

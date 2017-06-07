@@ -21,20 +21,27 @@
 
 namespace pocketmine\item;
 
-use pocketmine\entity\Effect;
 
+interface FoodSource extends Consumable{
 
-interface FoodSource{
-	public function getResidue();
-	
+	/**
+	 * Returns the number of hunger points this food type will give to the eater.
+	 *
+	 * @return int
+	 */
 	public function getFoodRestore() : int;
 
+	/**
+	 * Returns the amount of saturation which will be given to the eater when the food is eaten.
+	 *
+	 * @return float
+	 */
 	public function getSaturationRestore() : float;
 
 	/**
-	 * @return Effect[]
+	 * Returns whether the eater must be hungry to eat this item.
+	 *
+	 * @return bool
 	 */
-	public function getAdditionalEffects() : array;
-	
-	
+	public function requiresHunger() : bool;
 }

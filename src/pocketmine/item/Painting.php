@@ -1,39 +1,42 @@
 <?php
+
 /*
- * This file is translated from the Nukkit Project
- * which is written by MagicDroidX
- * @link https://github.com/Nukkit/Nukkit
+ *
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
+ * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * @author PocketMine Team
+ * @link http://www.pocketmine.net/
+ *
+ *
 */
 
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
-use pocketmine\level\Level;
-use pocketmine\math\Vector3;
 use pocketmine\Player;
-use pocketmine\entity\Painting as PaintingEntity;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
-use pocketmine\nbt\tag\StringTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
 
 class Painting extends Item{
 	public function __construct($meta = 0, $count = 1){
 		parent::__construct(self::PAINTING, 0, $count, "Painting");
 	}
 
-	public function canBeActivated() : bool{
-		return true;
-	}
-
-	public function onActivate(Level $level, Player $player, Block $block, Block $target, $face, $fx, $fy, $fz){
-		if($target->isTransparent() === false and $face > 1 and $block->isSolid() === false){
+	public function onClickBlock(Player $player, Block $block, Block $blockClicked, int $face, float $fx, float $fy, float $fz){
+		if($blockClicked->isTransparent() === false and $face > 1 and $block->isSolid() === false){
 			$faces = [
 				2 => 1,
 				3 => 3,
 				4 => 0,
 				5 => 2,
+
 			];
 			$motives = [
 				// Motive Width Height
@@ -64,76 +67,16 @@ class Painting extends Item{
 				["Pigscene", 4, 4],
 				["Flaming Skull", 4, 4],
 			];
-
-			$right = [4, 5, 3, 2];
-
-			$validMotives = [];
-			foreach($motives as $motive){
-				$valid = true;
-				for($x = 0; $x < $motive[1] && $valid; $x++){
-					for($z = 0; $z < $motive[2] && $valid; $z++){
-						if($target->getSide($right[$face - 2], $x)->isTransparent() ||
-							$target->getSide(Vector3::SIDE_UP, $z)->isTransparent() ||
-							$block->getSide($right[$face - 2], $x)->isSolid() ||
-							$block->getSide(Vector3::SIDE_UP, $z)->isSolid()
-						){
-							$valid = false;
-						}
-					}
-				}
-
-				if($valid){
-					$validMotives[] = $motive;
-				}
-			}
-
-			$motive = $motives[mt_rand(0, count($validMotives) - 1)];
+			$motive = $motives[mt_rand(0, count($motives) - 1)];
 			$data = [
-				"x" => $target->x,
-				"y" => $target->y,
-				"z" => $target->z,
+				"x" => $blockClicked->x,
+				"y" => $blockClicked->y,
+				"z" => $blockClicked->z,
 				"yaw" => $faces[$face] * 90,
 				"Motive" => $motive[0],
 			];
 
-			$nbt = new CompoundTag("", [
-				"Motive" => new StringTag("Motive", $data["Motive"]),
-				"Pos" => new ListTag("Pos", [
-					new DoubleTag("", $data["x"]),
-					new DoubleTag("", $data["y"]),
-					new DoubleTag("", $data["z"])
-				]),
-				"Motion" => new ListTag("Motion", [
-					new DoubleTag("", 0),
-					new DoubleTag("", 0),
-					new DoubleTag("", 0)
-				]),
-				"Rotation" => new ListTag("Rotation", [
-					new FloatTag("", $data["yaw"]),
-					new FloatTag("", 0)
-				]),
-			]);
-
-			$painting = new PaintingEntity($player->getLevel(), $nbt);
-			$painting->spawnToAll();
-
-			if($player->isSurvival()){
-				$item = $player->getInventory()->getItemInHand();
-				$count = $item->getCount();
-				if(--$count <= 0){
-					$player->getInventory()->setItemInHand(Item::get(Item::AIR));
-					return;
-				}
-
-				$item->setCount($count);
-				$player->getInventory()->setItemInHand($item);
-			}
 			//TODO
-			//$e = $server->api->entity->add($level, ENTITY_OBJECT, OBJECT_PAINTING, $data);
-			//$e->spawnToAll();
-			/*if(($player->gamemode & 0x01) === 0x00){
-				$player->removeItem(Item::get($this->getId(), $this->getDamage(), 1));
-			}*/
 
 			return true;
 		}

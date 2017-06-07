@@ -23,182 +23,179 @@ namespace pocketmine\lang;
 
 use pocketmine\event\TextContainer;
 use pocketmine\event\TranslationContainer;
+use pocketmine\utils\MainLogger;
 
-class BaseLang {
+class BaseLang{
 
-    const FALLBACK_LANGUAGE = "eng";
+	const FALLBACK_LANGUAGE = "eng";
 
-    public static function getLanguageList(string $path = "") : array{
-        if($path === ""){
-            $path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
-        }
+	public static function getLanguageList(string $path = "") : array{
+		if($path === ""){
+			$path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
+		}
 
-        $files = array_filter(scandir($path), function($filename){
-            return substr($filename, -4) === ".ini";
-        });
+		if(is_dir($path)){
+			$allFiles = scandir($path);
 
-        $result = [];
+			if($allFiles !== false){
+				$files = array_filter($allFiles, function($filename){
+					return substr($filename, -4) === ".ini";
+				});
 
-        foreach($files as $file){
-            $strings = [];
-            self::loadLang($path . $file, $strings);
-            if(isset($strings["language.name"])){
-                $result[substr($file, 0, -4)] = $strings["language.name"];
-            }
-        }
+				$result = [];
 
-        return $result;
-    }
+				foreach($files as $file){
+					$strings = [];
+					self::loadLang($path . $file, $strings);
+					if(isset($strings["language.name"])){
+						$result[substr($file, 0, -4)] = $strings["language.name"];
+					}
+				}
+
+				return $result;
+			}
+		}
+
+		return [];
+	}
 
 	protected $langName;
 
-    protected $lang = [];
-    protected $fallbackLang = [];
+	protected $lang = [];
+	protected $fallbackLang = [];
 
-    public function __construct($lang, $path = null, $fallback = self::FALLBACK_LANGUAGE) {
+	public function __construct($lang, $path = null, $fallback = self::FALLBACK_LANGUAGE){
 
-        $this->langName = strtolower($lang);
+		$this->langName = strtolower($lang);
 
-        if ($path === null) {
-            $path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
-        }
+		if($path === null){
+			$path = \pocketmine\PATH . "src/pocketmine/lang/locale/";
+		}
 
-		self::loadLang($path . $this->langName . ".ini", $this->lang);
-		self::loadLang($path . $fallback . ".ini", $this->fallbackLang);
+		if(!self::loadLang($file = $path . $this->langName . ".ini", $this->lang)){
+			MainLogger::getLogger()->error("Missing required language file $file");
+		}
+		if(!self::loadLang($file = $path . $fallback . ".ini", $this->fallbackLang)){
+			MainLogger::getLogger()->error("Missing required language file $file");
+		}
 	}
 
-    public function getName(): string {
-        return $this->get("language.name");
-    }
+	public function getName(){
+		return $this->get("language.name");
+	}
 
-    public function getLang() {
-        return $this->langName;
-    }
+	public function getLang(){
+		return $this->langName;
+	}
 
 	protected static function loadLang($path, array &$d){
-		if(file_exists($path) and strlen($content = file_get_contents($path)) > 0){
-			foreach(explode("\n", $content) as $line){
-				$line = trim($line);
-				if($line === "" or $line{0} === "#"){
-					continue;
+		if(file_exists($path)){
+			$d = parse_ini_file($path, false, INI_SCANNER_RAW);
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	/**
+	 * @param string      $str
+	 * @param string[]    $params
+	 * @param string|null $onlyPrefix
+	 *
+	 * @return string
+	 */
+	public function translateString($str, array $params = [], $onlyPrefix = null){
+		$baseText = $this->get($str);
+		$baseText = $this->parseTranslation(($baseText !== null and ($onlyPrefix === null or strpos($str, $onlyPrefix) === 0)) ? $baseText : $str, $onlyPrefix);
+
+		foreach($params as $i => $p){
+			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText, $onlyPrefix);
+		}
+
+		return str_replace("%0", "", $baseText); //fixes a client bug where %0 in translation will cause freeze
+	}
+
+	public function translate(TextContainer $c){
+		if($c instanceof TranslationContainer){
+			$baseText = $this->internalGet($c->getText());
+			$baseText = $this->parseTranslation($baseText !== null ? $baseText : $c->getText());
+
+			foreach($c->getParameters() as $i => $p){
+				$baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);
+			}
+		}else{
+			$baseText = $this->parseTranslation($c->getText());
+		}
+
+		return $baseText;
+	}
+
+	public function internalGet($id){
+		if(isset($this->lang[$id])){
+			return $this->lang[$id];
+		}elseif(isset($this->fallbackLang[$id])){
+			return $this->fallbackLang[$id];
+		}
+
+		return null;
+	}
+
+	public function get($id){
+		if(isset($this->lang[$id])){
+			return $this->lang[$id];
+		}elseif(isset($this->fallbackLang[$id])){
+			return $this->fallbackLang[$id];
+		}
+
+		return $id;
+	}
+
+	protected function parseTranslation($text, $onlyPrefix = null){
+		$newString = "";
+
+		$replaceString = null;
+
+		$len = strlen($text);
+		for($i = 0; $i < $len; ++$i){
+			$c = $text{$i};
+			if($replaceString !== null){
+				$ord = ord($c);
+				if(
+					($ord >= 0x30 and $ord <= 0x39) // 0-9
+					or ($ord >= 0x41 and $ord <= 0x5a) // A-Z
+					or ($ord >= 0x61 and $ord <= 0x7a) or // a-z
+					$c === "." or $c === "-"
+				){
+					$replaceString .= $c;
+				}else{
+					if(($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)){
+						$newString .= $t;
+					}else{
+						$newString .= $replaceString;
+					}
+					$replaceString = null;
+
+					if($c === "%"){
+						$replaceString = $c;
+					}else{
+						$newString .= $c;
+					}
 				}
+			}elseif($c === "%"){
+				$replaceString = $c;
+			}else{
+				$newString .= $c;
+			}
+		}
 
-                $t = explode("=", $line);
-                if (count($t) < 2) {
-                    continue;
-                }
+		if($replaceString !== null){
+			if(($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)){
+				$newString .= $t;
+			}else{
+				$newString .= $replaceString;
+			}
+		}
 
-                $key = trim(array_shift($t));
-                $value = trim(implode("=", $t));
-
-                if ($value === "") {
-                    continue;
-                }
-
-                $d[$key] = $value;
-            }
-        }
-    }
-
-    /**
-     * @param string $str
-     * @param string[] $params
-     *
-     * @param null $onlyPrefix
-     * @return string
-     */
-    public function translateString($str, array $params = [], $onlyPrefix = null) {
-        $baseText = $this->get($str);
-        $baseText = $this->parseTranslation(($baseText !== null and ($onlyPrefix === null or strpos($str, $onlyPrefix) === 0)) ? $baseText : $str, $onlyPrefix);
-
-        foreach ($params as $i => $p) {
-            $baseText = str_replace("{%$i}", $this->parseTranslation((string)$p), $baseText, $onlyPrefix);
-        }
-
-        return str_replace("%0", "", $baseText); //fixes a client bug where %0 in translation will cause freeze
-    }
-
-    public function translate(TextContainer $c) {
-        if ($c instanceof TranslationContainer) {
-            $baseText = $this->internalGet($c->getText());
-            $baseText = $this->parseTranslation($baseText !== null ? $baseText : $c->getText());
-
-            foreach ($c->getParameters() as $i => $p) {
-                $baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);
-            }
-        } else {
-            $baseText = $this->parseTranslation($c->getText());
-        }
-
-        return $baseText;
-    }
-
-    public function internalGet($id) {
-        if (isset($this->lang[$id])) {
-            return $this->lang[$id];
-        } elseif (isset($this->fallbackLang[$id])) {
-            return $this->fallbackLang[$id];
-        }
-
-        return null;
-    }
-
-    public function get($id) {
-        if (isset($this->lang[$id])) {
-            return $this->lang[$id];
-        } elseif (isset($this->fallbackLang[$id])) {
-            return $this->fallbackLang[$id];
-        }
-
-        return $id;
-    }
-
-    protected function parseTranslation($text, $onlyPrefix = null) {
-        $newString = "";
-
-        $replaceString = null;
-
-        $len = strlen($text);
-        for ($i = 0; $i < $len; ++$i) {
-            $c = $text{$i};
-            if ($replaceString !== null) {
-                $ord = ord($c);
-                if (
-                    ($ord >= 0x30 and $ord <= 0x39) // 0-9
-                    or ($ord >= 0x41 and $ord <= 0x5a) // A-Z
-                    or ($ord >= 0x61 and $ord <= 0x7a) or // a-z
-                    $c === "." or $c === "-"
-                ) {
-                    $replaceString .= $c;
-                } else {
-                    if (($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)) {
-                        $newString .= $t;
-                    } else {
-                        $newString .= $replaceString;
-                    }
-                    $replaceString = null;
-
-                    if ($c === "%") {
-                        $replaceString = $c;
-                    } else {
-                        $newString .= $c;
-                    }
-                }
-            } elseif ($c === "%") {
-                $replaceString = $c;
-            } else {
-                $newString .= $c;
-            }
-        }
-
-        if ($replaceString !== null) {
-            if (($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)) {
-                $newString .= $t;
-            } else {
-                $newString .= $replaceString;
-            }
-        }
-
-        return $newString;
-    }
+		return $newString;
+	}
 }

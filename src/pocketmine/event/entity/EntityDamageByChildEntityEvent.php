@@ -22,29 +22,42 @@
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\projectile\Snowball;
 
-class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent {
+/**
+ * Called when an entity takes damage from an entity sourced from another entity, for example being hit by a snowball thrown by a Player.
+ */
+class EntityDamageByChildEntityEvent extends EntityDamageByEntityEvent{
 
-    /** @var Entity */
-    private $childEntity;
+	/** @var int */
+	private $childEntityEid;
 
 
-    /**
-     * @param Entity $damager
-     * @param Entity $childEntity
-     * @param Entity $entity
-     * @param int $cause
-     * @param int|int[] $damage
-     */
-    public function __construct(Entity $damager, Entity $childEntity, Entity $entity, $cause, $damage) {
-        $this->childEntity = $childEntity;
-        parent::__construct($damager, $entity, $cause, $damage);
-    }
+	/**
+	 * @param Entity    $damager
+	 * @param Entity    $childEntity
+	 * @param Entity    $entity
+	 * @param int       $cause
+	 * @param int|int[] $damage
+	 */
+	public function __construct(Entity $damager, Entity $childEntity, Entity $entity, $cause, $damage){
+		$this->childEntityEid = $childEntity->getId();
+		parent::__construct($damager, $entity, $cause, $damage);
+	}
 
-    /**
-     * @return Entity
-     */
-    public function getChild() {
-        return $this->childEntity;
-    }
+	/**
+	 * Returns the entity which caused the damage, or null if the entity has been killed or closed.
+	 *
+	 * @return Entity|null
+	 */
+	public function getChild(){
+		return $this->getEntity()->getLevel()->getServer()->findEntity($this->childEntityEid, $this->getEntity()->getLevel());
+	}
+
+	public function canBeReducedByArmor() : bool{
+		if($this->getChild() instanceof Snowball){
+			return false;
+		}
+		return parent::canBeReducedByArmor();
+	}
 }

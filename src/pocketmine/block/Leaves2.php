@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,26 +15,20 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\enchantment\Enchantment;
 
 class Leaves2 extends Leaves{
 
-	const WOOD_TYPE = self::WOOD2;
-
 	protected $id = self::LEAVES2;
+	protected $woodType = self::LOG2;
 
-	public function __construct($meta = 0){
-		$this->meta = $meta;
-	}
-
-	public function getName() : string{
+	public function getName(){
 		static $names = [
 			self::ACACIA => "Acacia Leaves",
 			self::DARK_OAK => "Dark Oak Leaves",
@@ -42,16 +36,13 @@ class Leaves2 extends Leaves{
 		return $names[$this->meta & 0x01];
 	}
 
-	public function getDrops(Item $item) : array {
+	public function getDrops(Item $item){
 		$drops = [];
-		if($item->isShears() or $item->getEnchantmentLevel(Enchantment::SILK_TOUCH) > 0){
-			$drops[] = [$this->id, $this->meta & 0x01, 1];
+		if($item->isShears()){
+			$drops[] = Item::get($this->id, $this->meta & 0x01, 1);
 		}else{
-			$fortunel = $item->getEnchantmentLevel(Enchantment::FORTUNE);
-			$fortunel = min(3, $fortunel);
-			$rates = [20,16,12,10];
-			if(mt_rand(1, $rates[$fortunel]) === 1){ //Saplings
-				$drops[] = [Item::SAPLING, ($this->meta & 0x01) | 0x04, 1];
+			if(mt_rand(1, 20) === 1){ //Saplings
+				$drops[] = Item::get(Item::SAPLING, ($this->meta & 0x01) + 4, 1);
 			}
 		}
 

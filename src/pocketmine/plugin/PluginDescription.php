@@ -23,201 +23,255 @@ namespace pocketmine\plugin;
 
 use pocketmine\permission\Permission;
 
-class PluginDescription {
-    private $name;
-    private $main;
-    private $api;
-    private $depend = [];
-    private $softDepend = [];
-    private $loadBefore = [];
-    private $version;
-    private $commands = [];
-    private $description = null;
-    private $authors = [];
-    private $website = null;
-    private $prefix = null;
-    private $order = PluginLoadOrder::POSTWORLD;
+class PluginDescription{
+	private $name;
+	private $main;
+	private $api;
+	private $extensions = [];
+	private $depend = [];
+	private $softDepend = [];
+	private $loadBefore = [];
+	private $version;
+	private $commands = [];
+	private $description = null;
+	private $authors = [];
+	private $website = null;
+	private $prefix = null;
+	private $order = PluginLoadOrder::POSTWORLD;
 
-    /**
-     * @var Permission[]
-     */
-    private $permissions = [];
+	/**
+	 * @var Permission[]
+	 */
+	private $permissions = [];
 
-    /**
-     * @param string|array $yamlString
-     */
-    public function __construct($yamlString) {
-        $this->loadMap(!is_array($yamlString) ? \yaml_parse($yamlString) : $yamlString);
-    }
+	/**
+	 * @param string|array $yamlString
+	 */
+	public function __construct($yamlString){
+		$this->loadMap(!is_array($yamlString) ? \yaml_parse($yamlString) : $yamlString);
+	}
 
-    /**
-     * @param array $plugin
-     *
-     * @throws PluginException
-     */
-    private function loadMap(array $plugin) {
-        $this->name = preg_replace("[^A-Za-z0-9 _.-]", "", $plugin["name"]);
-        if ($this->name === "") {
-            throw new PluginException("Invalid PluginDescription name");
-        }
-        $this->name = str_replace(" ", "_", $this->name);
-        $this->version = $plugin["version"];
-        $this->main = $plugin["main"];
-        $this->api = !is_array($plugin["api"]) ? [$plugin["api"]] : $plugin["api"];
+	/**
+	 * @param array $plugin
+	 *
+	 * @throws PluginException
+	 */
+	private function loadMap(array $plugin){
+		$this->name = preg_replace("[^A-Za-z0-9 _.-]", "", $plugin["name"]);
+		if($this->name === ""){
+			throw new PluginException("Invalid PluginDescription name");
+		}
+		$this->name = str_replace(" ", "_", $this->name);
+		$this->version = $plugin["version"];
+		$this->main = $plugin["main"];
+		$this->api = !is_array($plugin["api"]) ? [$plugin["api"]] : $plugin["api"];
+		if(stripos($this->main, "pocketmine\\") === 0){
+			throw new PluginException("Invalid PluginDescription main, cannot start within the PocketMine namespace");
+		}
 
-        if (stripos($this->main, "pocketmine\\") === 0) {
-            throw new PluginException("Invalid PluginDescription main, cannot start within the PocketMine namespace");
-        }
+		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
+			$this->commands = $plugin["commands"];
+		}
 
-        if (isset($plugin["commands"]) and is_array($plugin["commands"])) {
-            $this->commands = $plugin["commands"];
-        }
+		if(isset($plugin["depend"])){
+			$this->depend = (array) $plugin["depend"];
+		}
+		if(isset($plugin["extensions"])){
+			$extensions = (array) $plugin["extensions"];
+			$isLinear = $extensions === array_values($extensions);
+			foreach($extensions as $k => $v){
+				if($isLinear){
+					$k = $v;
+					$v = "*";
+				}
+				$this->extensions[$k] = is_array($v) ? $v : [$v];
+			}
+		}
+		if(isset($plugin["softdepend"])){
+			$this->softDepend = (array) $plugin["softdepend"];
+		}
+		if(isset($plugin["loadbefore"])){
+			$this->loadBefore = (array) $plugin["loadbefore"];
+		}
 
-        if (isset($plugin["depend"])) {
-            $this->depend = (array)$plugin["depend"];
-        }
-        if (isset($plugin["softdepend"])) {
-            $this->softDepend = (array)$plugin["softdepend"];
-        }
-        if (isset($plugin["loadbefore"])) {
-            $this->loadBefore = (array)$plugin["loadbefore"];
-        }
+		if(isset($plugin["website"])){
+			$this->website = $plugin["website"];
+		}
+		if(isset($plugin["description"])){
+			$this->description = $plugin["description"];
+		}
+		if(isset($plugin["prefix"])){
+			$this->prefix = $plugin["prefix"];
+		}
+		if(isset($plugin["load"])){
+			$order = strtoupper($plugin["load"]);
+			if(!defined(PluginLoadOrder::class . "::" . $order)){
+				throw new PluginException("Invalid PluginDescription load");
+			}else{
+				$this->order = constant(PluginLoadOrder::class . "::" . $order);
+			}
+		}
+		$this->authors = [];
+		if(isset($plugin["author"])){
+			$this->authors[] = $plugin["author"];
+		}
+		if(isset($plugin["authors"])){
+			foreach($plugin["authors"] as $author){
+				$this->authors[] = $author;
+			}
+		}
 
-        if (isset($plugin["website"])) {
-            $this->website = $plugin["website"];
-        }
-        if (isset($plugin["description"])) {
-            $this->description = $plugin["description"];
-        }
-        if (isset($plugin["prefix"])) {
-            $this->prefix = $plugin["prefix"];
-        }
-        if (isset($plugin["load"])) {
-            $order = strtoupper($plugin["load"]);
-            if (!defined(PluginLoadOrder::class . "::" . $order)) {
-                throw new PluginException("Invalid PluginDescription load");
-            } else {
-                $this->order = constant(PluginLoadOrder::class . "::" . $order);
-            }
-        }
-        $this->authors = [];
-        if (isset($plugin["author"])) {
-            $this->authors[] = $plugin["author"];
-        }
-        if (isset($plugin["authors"])) {
-            foreach ($plugin["authors"] as $author) {
-                $this->authors[] = $author;
-            }
-        }
+		if(isset($plugin["permissions"])){
+			$this->permissions = Permission::loadPermissions($plugin["permissions"]);
+		}
+	}
 
-        if (isset($plugin["permissions"])) {
-            $this->permissions = Permission::loadPermissions($plugin["permissions"]);
-        }
-    }
+	/**
+	 * @return string
+	 */
+	public function getFullName(){
+		return $this->name . " v" . $this->version;
+	}
 
-    /**
-     * @return string
-     */
-    public function getFullName() {
-        return $this->name . " v" . $this->version;
-    }
+	/**
+	 * @return array
+	 */
+	public function getCompatibleApis(){
+		return $this->api;
+	}
 
-    /**
-     * @return array
-     */
-    public function getCompatibleApis() {
-        return $this->api;
-    }
+	/**
+	 * @return array
+	 */
+	public function getAuthors(){
+		return $this->authors;
+	}
 
+	/**
+	 * @return string
+	 */
+	public function getPrefix(){
+		return $this->prefix;
+	}
 
-    /**
-     * @return array
-     */
-    public function getAuthors() {
-        return $this->authors;
-    }
+	/**
+	 * @return array
+	 */
+	public function getCommands(){
+		return $this->commands;
+	}
 
-    /**
-     * @return string
-     */
-    public function getPrefix() {
-        return $this->prefix;
-    }
+	/**
+	 * @return array
+	 */
+	public function getRequiredExtensions(){
+		return $this->extensions;
+	}
 
-    /**
-     * @return array
-     */
-    public function getCommands() {
-        return $this->commands;
-    }
+	/**
+	 * Checks if the current PHP runtime has the extensions required by the plugin.
+	 *
+	 * @throws PluginException if there are required extensions missing or have incompatible version, or if the version constraint cannot be parsed
+	 */
+	public function checkRequiredExtensions(){
+		foreach($this->extensions as $name => $versionConstrs){
+			if(!extension_loaded($name)){
+				throw new PluginException("Required extension $name not loaded");
+			}
 
-    /**
-     * @return array
-     */
-    public function getDepend() {
-        return $this->depend;
-    }
+			if(!is_array($versionConstrs)){
+				$versionConstrs = [$versionConstrs];
+			}
+			$gotVersion = phpversion($name);
+			foreach($versionConstrs as $constr){ // versionConstrs_loop
+				if($constr === "*"){
+					continue;
+				}
+				if($constr === ""){
+					throw new PluginException("One of the extension version constraints of $name is empty. Consider quoting the version string in plugin.yml");
+				}
+				foreach(["<=", "le", "<>", "!=", "ne", "<", "lt", "==", "=", "eq", ">=", "ge", ">", "gt"] as $comparator){
+					// warning: the > character should be quoted in YAML
+					if(substr($constr, 0, strlen($comparator)) === $comparator){
+						$version = substr($constr, strlen($comparator));
+						if(!version_compare($gotVersion, $version, $comparator)){
+							throw new PluginException("Required extension $name has an incompatible version ($gotVersion not $constr)");
+						}
+						continue 2; // versionConstrs_loop
+					}
+				}
+				throw new PluginException("Error parsing version constraint: $constr");
+			}
+		}
+	}
 
-    /**
-     * @return string
-     */
-    public function getDescription() {
-        return $this->description;
-    }
+	/**
+	 * @return array
+	 */
+	public function getDepend(){
+		return $this->depend;
+	}
 
-    /**
-     * @return array
-     */
-    public function getLoadBefore() {
-        return $this->loadBefore;
-    }
+	/**
+	 * @return string
+	 */
+	public function getDescription(){
+		return $this->description;
+	}
 
-    /**
-     * @return string
-     */
-    public function getMain() {
-        return $this->main;
-    }
+	/**
+	 * @return array
+	 */
+	public function getLoadBefore(){
+		return $this->loadBefore;
+	}
 
-    /**
-     * @return string
-     */
-    public function getName(): string {
-        return $this->name;
-    }
+	/**
+	 * @return string
+	 */
+	public function getMain(){
+		return $this->main;
+	}
 
-    /**
-     * @return int
-     */
-    public function getOrder() {
-        return $this->order;
-    }
+	/**
+	 * @return string
+	 */
+	public function getName(){
+		return $this->name;
+	}
 
-    /**
-     * @return Permission[]
-     */
-    public function getPermissions() {
-        return $this->permissions;
-    }
+	/**
+	 * @return int
+	 */
+	public function getOrder(){
+		return $this->order;
+	}
 
-    /**
-     * @return array
-     */
-    public function getSoftDepend() {
-        return $this->softDepend;
-    }
+	/**
+	 * @return Permission[]
+	 */
+	public function getPermissions(){
+		return $this->permissions;
+	}
 
-    /**
-     * @return string
-     */
-    public function getVersion() {
-        return $this->version;
-    }
+	/**
+	 * @return array
+	 */
+	public function getSoftDepend(){
+		return $this->softDepend;
+	}
 
-    /**
-     * @return string
-     */
-    public function getWebsite() {
-        return $this->website;
-    }
+	/**
+	 * @return string
+	 */
+	public function getVersion(){
+		return $this->version;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getWebsite(){
+		return $this->website;
+	}
 }

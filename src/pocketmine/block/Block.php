@@ -2,11 +2,11 @@
 
 /*
  *
- *  ____            _        _   __  __ _                  __  __ ____  
- * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \ 
+ *  ____            _        _   __  __ _                  __  __ ____
+ * |  _ \ ___   ___| | _____| |_|  \/  (_)_ __   ___      |  \/  |  _ \
  * | |_) / _ \ / __| |/ / _ \ __| |\/| | | '_ \ / _ \_____| |\/| | |_) |
- * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/ 
- * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_| 
+ * |  __/ (_) | (__|   <  __/ |_| |  | | | | | |  __/_____| |  | |  __/
+ * |_|   \___/ \___|_|\_\___|\__|_|  |_|_|_| |_|\___|     |_|  |_|_|
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -15,7 +15,7 @@
  *
  * @author PocketMine Team
  * @link http://www.pocketmine.net/
- * 
+ *
  *
 */
 
@@ -25,8 +25,8 @@
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
-
 use pocketmine\item\Item;
+use pocketmine\item\TieredTool;
 use pocketmine\item\Tool;
 use pocketmine\level\Level;
 use pocketmine\level\MovingObjectPosition;
@@ -38,7 +38,7 @@ use pocketmine\metadata\MetadataValue;
 use pocketmine\Player;
 use pocketmine\plugin\Plugin;
 
-class Block extends Position implements BlockIds, Metadatable{	
+class Block extends Position implements BlockIds, Metadatable{
 
 	/** @var \SplFixedArray */
 	public static $list = null;
@@ -55,12 +55,8 @@ class Block extends Position implements BlockIds, Metadatable{
 	public static $hardness = null;
 	/** @var \SplFixedArray */
 	public static $transparent = null;
-
-	protected $id;
-	protected $meta = 0;
-
-	/** @var AxisAlignedBB */
-	public $boundingBox = null;
+	/** @var \SplFixedArray */
+	public static $diffusesSkyLight = null;
 
 	public static function init(){
 		if(self::$list === null){
@@ -71,264 +67,237 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::$solid = new \SplFixedArray(256);
 			self::$hardness = new \SplFixedArray(256);
 			self::$transparent = new \SplFixedArray(256);
-			self::$list[self::AIR] = Air::class;
-			self::$list[self::STONE] = Stone::class;
-			self::$list[self::GRASS] = Grass::class;
-			self::$list[self::DIRT] = Dirt::class;
-			self::$list[self::COBBLESTONE] = Cobblestone::class;
-			self::$list[self::PLANKS] = Planks::class;
-			self::$list[self::SAPLING] = Sapling::class;
-			self::$list[self::BEDROCK] = Bedrock::class;
-			self::$list[self::WATER] = Water::class;
-			self::$list[self::STILL_WATER] = StillWater::class;
-			self::$list[self::LAVA] = Lava::class;
-			self::$list[self::STILL_LAVA] = StillLava::class;
-			self::$list[self::SAND] = Sand::class;
-			self::$list[self::GRAVEL] = Gravel::class;
-			self::$list[self::GOLD_ORE] = GoldOre::class;
-			self::$list[self::IRON_ORE] = IronOre::class;
-			self::$list[self::COAL_ORE] = CoalOre::class;
-			self::$list[self::WOOD] = Wood::class;
-			self::$list[self::LEAVES] = Leaves::class;
-			self::$list[self::SPONGE] = Sponge::class;
-			self::$list[self::GLASS] = Glass::class;
-			self::$list[self::LAPIS_ORE] = LapisOre::class;
-			self::$list[self::LAPIS_BLOCK] = Lapis::class;
-			self::$list[self::SANDSTONE] = Sandstone::class;
-			self::$list[self::RED_SANDSTONE] = RedSandstone::class;
-			self::$list[self::RED_SANDSTONE_STAIRS] = RedSandstoneStairs::class;
-			self::$list[self::BED_BLOCK] = Bed::class;
-			self::$list[self::COBWEB] = Cobweb::class;
-			self::$list[self::TALL_GRASS] = TallGrass::class;
-			self::$list[self::DEAD_BUSH] = DeadBush::class;
-			self::$list[self::WOOL] = Wool::class;
-			self::$list[self::DANDELION] = Dandelion::class;
-			self::$list[self::RED_FLOWER] = Flower::class;
-			self::$list[self::BROWN_MUSHROOM] = BrownMushroom::class;
-			self::$list[self::RED_MUSHROOM] = RedMushroom::class;
-			self::$list[self::GOLD_BLOCK] = Gold::class;
-			self::$list[self::IRON_BLOCK] = Iron::class;
-			self::$list[self::DOUBLE_SLAB] = DoubleSlab::class;
-			self::$list[self::SLAB] = Slab::class;
-			self::$list[self::RED_SANDSTONE_SLAB] = RedSandstoneSlab::class;
-			self::$list[self::DOUBLE_RED_SANDSTONE_SLAB] = DoubleRedSandstoneSlab::class;
-			self::$list[self::BRICKS_BLOCK] = Bricks::class;
-			self::$list[self::TNT] = TNT::class;
-			self::$list[self::BOOKSHELF] = Bookshelf::class;
-			self::$list[self::MOSS_STONE] = MossStone::class;
-			self::$list[self::OBSIDIAN] = Obsidian::class;
-			self::$list[self::TORCH] = Torch::class;
-			self::$list[self::FIRE] = Fire::class;
-			self::$list[self::MONSTER_SPAWNER] = MonsterSpawner::class;
-			self::$list[self::WOOD_STAIRS] = WoodStairs::class;
-			self::$list[self::ENDER_CHEST] = EnderChest::class;
-			self::$list[self::CHEST] = Chest::class;
 
-			self::$list[self::DIAMOND_ORE] = DiamondOre::class;
-			self::$list[self::DIAMOND_BLOCK] = Diamond::class;
-			self::$list[self::WORKBENCH] = Workbench::class;
-			self::$list[self::WHEAT_BLOCK] = Wheat::class;
-			self::$list[self::FARMLAND] = Farmland::class;
-			self::$list[self::FURNACE] = Furnace::class;
-			self::$list[self::BURNING_FURNACE] = BurningFurnace::class;
-			self::$list[self::SIGN_POST] = SignPost::class;
-			self::$list[self::WOOD_DOOR_BLOCK] = WoodDoor::class;
-			self::$list[self::SPRUCE_DOOR_BLOCK] = SpruceDoor::class;
-			self::$list[self::BIRCH_DOOR_BLOCK] = BirchDoor::class;
-			self::$list[self::JUNGLE_DOOR_BLOCK] = JungleDoor::class;
-			self::$list[self::ACACIA_DOOR_BLOCK] = AcaciaDoor::class;
-			self::$list[self::DARK_OAK_DOOR_BLOCK] = DarkOakDoor::class;
-			self::$list[self::LADDER] = Ladder::class;
+			self::registerBlock(new Air());
+			self::registerBlock(new Stone());
+			self::registerBlock(new Grass());
+			self::registerBlock(new Dirt());
+			self::registerBlock((new Cobblestone(Block::COBBLESTONE))->setName("Cobblestone"));
+			self::registerBlock(new Planks());
+			self::registerBlock(new Sapling());
+			self::registerBlock(new Bedrock());
+			self::registerBlock(new FlowingWater());
+			self::registerBlock(new StillWater());
+			self::registerBlock(new FlowingLava());
+			self::registerBlock(new StillLava());
+			self::registerBlock(new Sand());
+			self::registerBlock(new Gravel());
+			self::registerBlock(new GoldOre());
+			self::registerBlock(new IronOre());
+			self::registerBlock(new CoalOre());
+			self::registerBlock(new Wood());
+			self::registerBlock(new Leaves());
+			self::registerBlock(new Sponge());
+			self::registerBlock(new Glass());
+			self::registerBlock(new LapisOre());
+			self::registerBlock(new Lapis());
+			self::registerBlock(new ActivatorRail());
+			self::registerBlock(new CocoaBlock());
+			self::registerBlock(new Sandstone());
+			self::registerBlock(new NoteBlock());
+			self::registerBlock(new Bed());
+			self::registerBlock(new PoweredRail());
+			self::registerBlock(new DetectorRail());
+			self::registerBlock(new Cobweb());
+			self::registerBlock(new TallGrass());
+			self::registerBlock(new DeadBush());
+			self::registerBlock(new Wool());
+			self::registerBlock(new Dandelion());
+			self::registerBlock(new Flower());
+			self::registerBlock(new BrownMushroom());
+			self::registerBlock(new RedMushroom());
+			self::registerBlock(new Gold());
+			self::registerBlock(new Iron());
+			self::registerBlock(new DoubleStoneSlab());
+			self::registerBlock(new StoneSlab());
+			self::registerBlock(new Bricks());
+			self::registerBlock(new TNT());
+			self::registerBlock(new Bookshelf());
+			self::registerBlock((new Cobblestone(Block::MOSSY_COBBLESTONE))->setName("Moss Stone"));
+			self::registerBlock(new Obsidian());
+			self::registerBlock(new Torch());
+			self::registerBlock(new Fire());
+			self::registerBlock(new MonsterSpawner());
+			self::registerBlock((new WoodenStairs(Block::OAK_STAIRS))->setName("Oak Wood Stairs"));
+			self::registerBlock(new Chest());
 
-			self::$list[self::COBBLESTONE_STAIRS] = CobblestoneStairs::class;
-			self::$list[self::WALL_SIGN] = WallSign::class;
+			self::registerBlock(new DiamondOre());
+			self::registerBlock(new Diamond());
+			self::registerBlock(new CraftingTable());
+			self::registerBlock(new Wheat());
+			self::registerBlock(new Farmland());
+			self::registerBlock(new Furnace());
+			self::registerBlock(new BurningFurnace());
+			self::registerBlock(new StandingSign());
+			self::registerBlock((new WoodenDoor(Block::WOODEN_DOOR_BLOCK))->setName("Wooden Door Block"));
+			self::registerBlock((new WoodenDoor(Block::SPRUCE_DOOR_BLOCK))->setName("Spruce Door Block"));
+			self::registerBlock((new WoodenDoor(Block::BIRCH_DOOR_BLOCK))->setName("Birch Door Block"));
+			self::registerBlock((new WoodenDoor(Block::JUNGLE_DOOR_BLOCK))->setName("Jungle Door Block"));
+			self::registerBlock((new WoodenDoor(Block::ACACIA_DOOR_BLOCK))->setName("Acacia Door Block"));
+			self::registerBlock((new WoodenDoor(Block::DARK_OAK_DOOR_BLOCK))->setName("Dark Oak Door Block"));
+			self::registerBlock(new Ladder());
+			self::registerBlock(new Rail());
 
-			self::$list[self::IRON_DOOR_BLOCK] = IronDoor::class;
-			self::$list[self::REDSTONE_ORE] = RedstoneOre::class;
-			self::$list[self::GLOWING_REDSTONE_ORE] = GlowingRedstoneOre::class;
+			self::registerBlock(new CobblestoneStairs());
+			self::registerBlock(new WallSign());
+			self::registerBlock(new Lever());
+			self::registerBlock(new StonePressurePlate());
+			self::registerBlock(new IronDoor());
+			self::registerBlock(new WoodenPressurePlate());
+			self::registerBlock(new RedstoneOre());
+			self::registerBlock(new GlowingRedstoneOre());
 
-			self::$list[self::SNOW_LAYER] = SnowLayer::class;
-			self::$list[self::ICE] = Ice::class;
-			self::$list[self::SNOW_BLOCK] = Snow::class;
-			self::$list[self::CACTUS] = Cactus::class;
-			self::$list[self::CLAY_BLOCK] = Clay::class;
-			self::$list[self::SUGARCANE_BLOCK] = Sugarcane::class;
+			self::registerBlock(new RedstoneTorch());
+			self::registerBlock(new LitRedstoneTorch());
+			self::registerBlock(new StoneButton());
+			self::registerBlock(new SnowLayer());
+			self::registerBlock(new Ice());
+			self::registerBlock(new Snow());
+			self::registerBlock(new Cactus());
+			self::registerBlock(new Clay());
+			self::registerBlock(new Sugarcane());
 
-			self::$list[self::FENCE] = Fence::class;
-			self::$list[self::PUMPKIN] = Pumpkin::class;
-			self::$list[self::NETHERRACK] = Netherrack::class;
-			self::$list[self::SOUL_SAND] = SoulSand::class;
-			self::$list[self::GLOWSTONE_BLOCK] = Glowstone::class;
+			self::registerBlock(new Fence());
+			self::registerBlock(new Pumpkin());
+			self::registerBlock(new Netherrack());
+			self::registerBlock(new SoulSand());
+			self::registerBlock(new Glowstone());
 
-			self::$list[self::LIT_PUMPKIN] = LitPumpkin::class;
-			self::$list[self::CAKE_BLOCK] = Cake::class;
+			self::registerBlock(new LitPumpkin());
+			self::registerBlock(new Cake());
 
-			self::$list[self::TRAPDOOR] = Trapdoor::class;
-			self::$list[self::IRON_TRAPDOOR] = IronTrapdoor::class;
+			self::registerBlock(new Trapdoor());
 
-			self::$list[self::STONE_BRICKS] = StoneBricks::class;
-			
-			self::$list[self::BROWN_MUSHROOM_BLOCK] = BrownMushroomBlock::class;
-			self::$list[self::RED_MUSHROOM_BLOCK] = RedMushroomBlock::class;
+			self::registerBlock(new StoneBricks());
 
-			self::$list[self::IRON_BARS] = IronBars::class;
-			self::$list[self::GLASS_PANE] = GlassPane::class;
-			self::$list[self::MELON_BLOCK] = Melon::class;
-			self::$list[self::PUMPKIN_STEM] = PumpkinStem::class;
-			self::$list[self::MELON_STEM] = MelonStem::class;
-			self::$list[self::VINE] = Vine::class;
-			self::$list[self::FENCE_GATE] = FenceGate::class;
-			self::$list[self::BRICK_STAIRS] = BrickStairs::class;
-			self::$list[self::STONE_BRICK_STAIRS] = StoneBrickStairs::class;
+			self::registerBlock(new IronBars());
+			self::registerBlock(new GlassPane());
+			self::registerBlock(new Melon());
+			self::registerBlock(new PumpkinStem());
+			self::registerBlock(new MelonStem());
+			self::registerBlock(new Vine());
+			self::registerBlock((new FenceGate(Block::OAK_FENCE_GATE))->setName("Oak Fence Gate"));
+			self::registerBlock(new BrickStairs());
+			self::registerBlock(new StoneBrickStairs());
 
-			self::$list[self::MYCELIUM] = Mycelium::class;
-			self::$list[self::WATER_LILY] = WaterLily::class;
-			self::$list[self::NETHER_BRICKS] = NetherBrick::class;
+			self::registerBlock(new Mycelium());
+			self::registerBlock(new WaterLily());
+			self::registerBlock(new NetherBrick());
+			self::registerBlock(new NetherBrickFence());
+			self::registerBlock(new NetherBrickStairs());
+			self::registerBlock(new NetherWartPlant());
 
-			self::$list[self::PORTAL] = Portal::class;
-			self::$list[self::NETHER_BRICKS_STAIRS] = NetherBrickStairs::class;
-			self::$list[self::NETHER_WART_BLOCK] = NetherWart::class;
-			self::$list[self::ENCHANTING_TABLE] = EnchantingTable::class;
+			self::registerBlock(new EnchantingTable());
+			self::registerBlock(new BrewingStand());
+			self::registerBlock(new EndPortalFrame());
+			self::registerBlock(new EndStone());
+			self::registerBlock(new RedstoneLamp());
+			self::registerBlock(new LitRedstoneLamp());
+			self::registerBlock(new SandstoneStairs());
+			self::registerBlock(new EmeraldOre());
+			self::registerBlock(new TripwireHook());
+			self::registerBlock(new Tripwire());
+			self::registerBlock(new Emerald());
+			self::registerBlock((new WoodenStairs(Block::SPRUCE_STAIRS))->setName("Spruce Wood Stairs"));
+			self::registerBlock((new WoodenStairs(Block::BIRCH_STAIRS))->setName("Birch Wood Stairs"));
+			self::registerBlock((new WoodenStairs(Block::JUNGLE_STAIRS))->setName("Jungle Wood Stairs"));
+			self::registerBlock(new CobblestoneWall());
+			self::registerBlock(new FlowerPot());
+			self::registerBlock(new Carrot());
+			self::registerBlock(new Potato());
+			self::registerBlock(new WoodenButton());
+			self::registerBlock(new Skull());
+			self::registerBlock(new Anvil());
+			self::registerBlock(new TrappedChest());
+			self::registerBlock(new LightWeightedPressurePlate());
+			self::registerBlock(new HeavyWeightedPressurePlate());
 
-			self::$list[self::BREWING_STAND_BLOCK] = BrewingStand::class;
-			self::$list[self::END_PORTAL_FRAME] = EndPortalFrame::class;
-			self::$list[self::END_PORTAL] = EndPortal::class;
-			self::$list[self::END_STONE] = EndStone::class;
+			self::registerBlock(new DaylightSensor());
+			self::registerBlock(new Redstone());
 
-			self::$list[self::END_STONE_BRICKS] = EndStoneBricks::class;
-			self::$list[self::END_ROD] = EndRod::class;
+			self::registerBlock(new Quartz());
+			self::registerBlock(new QuartzStairs());
+			self::registerBlock(new DoubleWoodSlab());
+			self::registerBlock(new WoodenSlab());
+			self::registerBlock(new StainedClay());
 
-			self::$list[self::PURPUR] = Purpur::class;
-			self::$list[self::PURPUR_STAIRS] = PurpurStairs::class;
+			self::registerBlock(new Leaves2());
+			self::registerBlock(new Wood2());
+			self::registerBlock((new WoodenStairs(Block::ACACIA_STAIRS))->setName("Acacia Wood Stairs"));
+			self::registerBlock((new WoodenStairs(Block::DARK_OAK_STAIRS))->setName("Dark Oak Wood Stairs"));
+			self::registerBlock(new Prismarine());
+			self::registerBlock(new SeaLantern());
+			self::registerBlock(new IronTrapdoor());
+			self::registerBlock(new HayBale());
+			self::registerBlock(new Carpet());
+			self::registerBlock(new HardenedClay());
+			self::registerBlock(new Coal());
+			self::registerBlock(new PackedIce());
+			self::registerBlock(new DoublePlant());
 
-			self::$list[self::CHORUS_FLOWER] = ChorusFlower::class;
-			self::$list[self::CHORUS_PLANT] = ChorusPlant::class;
+			self::registerBlock((new FenceGate(Block::SPRUCE_FENCE_GATE))->setName("Spruce Fence Gate"));
+			self::registerBlock((new FenceGate(Block::BIRCH_FENCE_GATE))->setName("Birch Fence Gate"));
+			self::registerBlock((new FenceGate(Block::JUNGLE_FENCE_GATE))->setName("Jungle Fence Gate"));
+			self::registerBlock((new FenceGate(Block::DARK_OAK_FENCE_GATE))->setName("Dark Oak Fence Gate"));
+			self::registerBlock((new FenceGate(Block::ACACIA_FENCE_GATE))->setName("Acacia Fence Gate"));
 
-			self::$list[self::SANDSTONE_STAIRS] = SandstoneStairs::class;
-			self::$list[self::EMERALD_ORE] = EmeraldOre::class;
+			self::registerBlock(new ItemFrame());
 
-			self::$list[self::EMERALD_BLOCK] = Emerald::class;
-			self::$list[self::SPRUCE_WOOD_STAIRS] = SpruceWoodStairs::class;
-			self::$list[self::BIRCH_WOOD_STAIRS] = BirchWoodStairs::class;
-			self::$list[self::JUNGLE_WOOD_STAIRS] = JungleWoodStairs::class;
-			self::$list[self::BEACON] = Beacon::class;
-			self::$list[self::STONE_WALL] = StoneWall::class;
+			self::registerBlock(new GrassPath());
 
-			self::$list[self::FLOWER_POT_BLOCK] = FlowerPot::class;
-			self::$list[self::CARROT_BLOCK] = Carrot::class;
-			self::$list[self::POTATO_BLOCK] = Potato::class;
-			self::$list[self::ANVIL] = Anvil::class;
+			self::registerBlock((new EndRod(Block::END_ROD))->setName("End Rod"));
 
-			self::$list[self::TRAPPED_CHEST] = TrappedChest::class;
-			self::$list[self::REDSTONE_BLOCK] = Redstone::class;
-			
-			self::$list[self::COMMAND_BLOCK] = CommandBlock::class;
+			self::registerBlock((new GlazedTerracotta(Block::PURPLE_GLAZED_TERRACOTTA))->setName("Purple Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::WHITE_GLAZED_TERRACOTTA))->setName("White Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::ORANGE_GLAZED_TERRACOTTA))->setName("Orange Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::MAGENTA_GLAZED_TERRACOTTA))->setName("Magenta Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::LIGHT_BLUE_GLAZED_TERRACOTTA))->setName("Light Blue Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::YELLOW_GLAZED_TERRACOTTA))->setName("Yellow Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::LIME_GLAZED_TERRACOTTA))->setName("Lime Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::PINK_GLAZED_TERRACOTTA))->setName("Pink Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::GRAY_GLAZED_TERRACOTTA))->setName("Grey Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::SILVER_GLAZED_TERRACOTTA))->setName("Light Grey Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::CYAN_GLAZED_TERRACOTTA))->setName("Cyan Glazed Terracotta"));
+			//chalkboard here
+			self::registerBlock((new GlazedTerracotta(Block::BLUE_GLAZED_TERRACOTTA))->setName("Blue Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::BROWN_GLAZED_TERRACOTTA))->setName("Brown Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::GREEN_GLAZED_TERRACOTTA))->setName("Green Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::RED_GLAZED_TERRACOTTA))->setName("Red Glazed Terracotta"));
+			self::registerBlock((new GlazedTerracotta(Block::BLACK_GLAZED_TERRACOTTA))->setName("Black Glazed Terracotta"));
 
-			self::$list[self::QUARTZ_BLOCK] = Quartz::class;
-			self::$list[self::QUARTZ_STAIRS] = QuartzStairs::class;
-			self::$list[self::DOUBLE_WOOD_SLAB] = DoubleWoodSlab::class;
-			self::$list[self::WOOD_SLAB] = WoodSlab::class;
-			self::$list[self::STAINED_CLAY] = StainedClay::class;
+			self::registerBlock(new Podzol());
+			self::registerBlock(new Beetroot());
+			self::registerBlock(new Stonecutter());
+			self::registerBlock(new GlowingObsidian());
 
-			self::$list[self::LEAVES2] = Leaves2::class;
-			self::$list[self::WOOD2] = Wood2::class;
-			self::$list[self::ACACIA_WOOD_STAIRS] = AcaciaWoodStairs::class;
-			self::$list[self::DARK_OAK_WOOD_STAIRS] = DarkOakWoodStairs::class;
-
-			self::$list[self::SLIME_BLOCK] = SlimeBlock::class;
-			self::$list[self::PRISMARINE] = Prismarine::class;
-			self::$list[self::SEA_LANTERN] = SeaLantern::class;
-			self::$list[self::HAY_BALE] = HayBale::class;
-			self::$list[self::CARPET] = Carpet::class;
-			self::$list[self::HARDENED_CLAY] = HardenedClay::class;
-			self::$list[self::COAL_BLOCK] = Coal::class;
-
-			self::$list[self::PACKED_ICE] = PackedIce::class;
-			self::$list[self::DOUBLE_PLANT] = DoublePlant::class;
-
-			self::$list[self::FENCE_GATE_SPRUCE] = FenceGateSpruce::class;
-			self::$list[self::FENCE_GATE_BIRCH] = FenceGateBirch::class;
-			self::$list[self::FENCE_GATE_JUNGLE] = FenceGateJungle::class;
-			self::$list[self::FENCE_GATE_DARK_OAK] = FenceGateDarkOak::class;
-			self::$list[self::FENCE_GATE_ACACIA] = FenceGateAcacia::class;
-
-			self::$list[self::GRASS_PATH] = GrassPath::class;
-
-			self::$list[self::PODZOL] = Podzol::class;
-			self::$list[self::BEETROOT_BLOCK] = Beetroot::class;
-			self::$list[self::STONECUTTER] = Stonecutter::class;
-			self::$list[self::GLOWING_OBSIDIAN] = GlowingObsidian::class;
-			self::$list[self::NETHER_REACTOR] = NetherReactor::class;
-
-			self::$list[self::NETHER_BRICK_FENCE] = NetherBrickFence::class;
-			self::$list[self::POWERED_RAIL] = PoweredRail::class;
-			self::$list[self::RAIL] = Rail::class;
-
-			self::$list[self::WOODEN_PRESSURE_PLATE] = WoodenPressurePlate::class;
-			self::$list[self::STONE_PRESSURE_PLATE] = StonePressurePlate::class;
-			self::$list[self::LIGHT_WEIGHTED_PRESSURE_PLATE] = LightWeightedPressurePlate::class;
-			self::$list[self::HEAVY_WEIGHTED_PRESSURE_PLATE] = HeavyWeightedPressurePlate::class;
-			self::$list[self::LIT_REDSTONE_LAMP] = LitRedstoneLamp::class;
-			self::$list[self::REDSTONE_LAMP] = RedstoneLamp::class;
-			self::$list[self::REDSTONE_TORCH] = RedstoneTorch::class;
-			self::$list[self::WOODEN_BUTTON] = WoodenButton::class;
-			self::$list[self::STONE_BUTTON] = StoneButton::class;
-			self::$list[self::LEVER] = Lever::class;
-			self::$list[self::DAYLIGHT_SENSOR] = DaylightDetector::class;
-			self::$list[self::DAYLIGHT_SENSOR_INVERTED] = DaylightDetectorInverted::class;
-			self::$list[self::NOTEBLOCK] = Noteblock::class;
-			self::$list[self::SKULL_BLOCK] = SkullBlock::class;
-			self::$list[self::NETHER_QUARTZ_ORE] = NetherQuartzOre::class;
-			self::$list[self::ACTIVATOR_RAIL] = ActivatorRail::class;
-			self::$list[self::COCOA_BLOCK] = CocoaBlock::class;
-			self::$list[self::DETECTOR_RAIL] = DetectorRail::class;
-			self::$list[self::TRIPWIRE] = Tripwire::class;
-			self::$list[self::TRIPWIRE_HOOK] = TripwireHook::class;
-			self::$list[self::ITEM_FRAME_BLOCK] = ItemFrame::class;
-			self::$list[self::DISPENSER] = Dispenser::class;
-			self::$list[self::DROPPER] = Dropper::class;
-			self::$list[self::POWERED_REPEATER_BLOCK] = PoweredRepeater::class;
-			self::$list[self::UNPOWERED_REPEATER_BLOCK] = UnpoweredRepeater::class;
-			self::$list[self::CAULDRON_BLOCK] = Cauldron::class;
-			self::$list[self::INVISIBLE_BEDROCK] = InvisibleBedrock::class;
-			self::$list[self::HOPPER_BLOCK] = Hopper::class;
-			self::$list[self::DRAGON_EGG] = DragonEgg::class;
-
-			foreach(self::$list as $id => $class){
-				if($class !== null){
-					/** @var Block $block */
-					$block = new $class();
-
-					for($data = 0; $data < 16; ++$data){
-						self::$fullList[($id << 4) | $data] = new $class($data);
-					}
-
-					self::$solid[$id] = $block->isSolid();
-					self::$transparent[$id] = $block->isTransparent();
-					self::$hardness[$id] = $block->getHardness();
-					self::$light[$id] = $block->getLightLevel();
-
-					if($block->isSolid()){
-						if($block->isTransparent()){
-							if($block instanceof Liquid or $block instanceof Ice){
-								self::$lightFilter[$id] = 2;
-							}else{
-								self::$lightFilter[$id] = 1;
-							}
-						}else{
-							self::$lightFilter[$id] = 15;
-						}
-					}else{
-						self::$lightFilter[$id] = 1;
-					}
-				}else{
-					self::$lightFilter[$id] = 1;
-					for($data = 0; $data < 16; ++$data){
-						self::$fullList[($id << 4) | $data] = new Block($id, $data);
-					}
+			foreach(self::$list as $id => $block){
+				if($block === null){
+					self::registerBlock(new UnknownBlock($id));
 				}
 			}
 		}
+	}
+
+	/**
+	 * Adds a Block type to the index. Plugins may use this method to register new block types, or override existing ones.
+	 * @since API 3.0.0
+	 *
+	 * @param Block $block
+	 */
+	public static function registerBlock(Block $block){
+		self::$list[$block->id] = $block;
+		for($data = 0; $data < 16; ++$data){
+			$b = clone $block;
+			$b->meta = $data;
+			self::$fullList[($block->id << 4) | $data] = $b;
+		}
+
+		self::$solid[$block->id] = $block->isSolid();
+		self::$transparent[$block->id] = $block->isTransparent();
+		self::$hardness[$block->id] = $block->getHardness();
+		self::$light[$block->id] = $block->getLightLevel();
+		self::$lightFilter[$block->id] = $block->getLightFilter() + 1;
+		self::$diffusesSkyLight[$block->id] = $block->diffusesSkyLight();
 	}
 
 	/**
@@ -339,19 +308,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return Block
 	 */
 	public static function get($id, $meta = 0, Position $pos = null){
-		if($id > 0xff){
-			trigger_error("BlockID cannot be higher than 255, defaulting to 0", E_USER_NOTICE);
-			$id = 0;
-		}
 		try{
-			$block = self::$list[$id];
-			if($block !== null){
-				$block = new $block($meta);
-			}else{
-				$block = new Block($id, $meta);
-			}
+			$block = clone self::$fullList[($id << 4) | $meta];
 		}catch(\RuntimeException $e){
-			$block = new Block($id, $meta);
+			$block = new UnknownBlock($id, $meta);
 		}
 
 		if($pos !== null){
@@ -364,7 +324,21 @@ class Block extends Position implements BlockIds, Metadatable{
 		return $block;
 	}
 
+	protected $fallbackName = "Unknown";
+
+	protected $id;
+	protected $meta = 0;
+
+	/** @var AxisAlignedBB */
+	public $boundingBox = null;
+
+
 	/**
+	 * Constructs a new instance of a Block.
+	 *
+	 * Note for plugin developers: This constructor should ONLY be used when creating an instance of a new block type to register into the block type index.
+	 * To get an instance of an existing block for use, use {@link Block#get} instead of constructing a new one.
+	 *
 	 * @param int $id
 	 * @param int $meta
 	 */
@@ -402,10 +376,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		return true;
 	}
 
-	public function tickRate() : int{
-		return 10;
-	}
-
 	/**
 	 * Do the actions needed so the block is broken with the Item
 	 *
@@ -414,7 +384,7 @@ class Block extends Position implements BlockIds, Metadatable{
 	 * @return mixed
 	 */
 	public function onBreak(Item $item){
-		return $this->getLevel()->setBlock($this, new Air(), true, true);
+		return $this->getLevel()->setBlock($this, Block::get(Block::AIR), true, true);
 	}
 
 	/**
@@ -422,10 +392,10 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @param int $type
 	 *
-	 * @return void
+	 * @return int|bool
 	 */
 	public function onUpdate($type){
-
+		return false;
 	}
 
 	/**
@@ -441,62 +411,43 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
 	public function getHardness(){
 		return 10;
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
 	public function getResistance(){
 		return $this->getHardness() * 5;
 	}
 
 	/**
-	 * @return int
-	 */
-	public function getBurnChance() : int{
-		return 0;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getBurnAbility() : int{
-		return 0;
-	}
-
-	public function isTopFacingSurfaceSolid(){
-		if($this->isSolid()){
-			return true;
-		}else{
-			if($this instanceof Stair and ($this->getDamage() &4) == 4){
-				return true;
-			}elseif($this instanceof Slab and ($this->getDamage() & 8) == 8){
-				return true;
-			}elseif($this instanceof SnowLayer and ($this->getDamage() & 7) == 7){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public function canNeighborBurn(){
-		for($face = 0; $face < 5; $face++){
-			if($this->getSide($face)->getBurnChance() > 0){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
+	 * Returns the best tool type to use for breaking this type of block.
 	 * @return int
 	 */
 	public function getToolType(){
 		return Tool::TYPE_NONE;
+	}
+
+	/**
+	 * Returns whether the tool type specified in {@link Block#getToolType} must be used to get drops when breaking this block.
+	 * For example, wood's tool type is Axe, but does not require an Axe to get drops. Stone on the other hand requires a pickaxe, and a pickaxe must be used.
+	 *
+	 * @return bool
+	 */
+	public function requiresCorrectToolType() : bool{
+		return false;
+	}
+
+	/**
+	 * Returns the tool tier needed to break this block and get drops.
+	 * @return int
+	 */
+	public function getRequiredToolTier() : int{
+		return TieredTool::TIER_ANY;
 	}
 
 	/**
@@ -514,6 +465,29 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns the amount of light this block will filter out when light passes through this block.
+	 * This value is used in light spread calculation.
+	 *
+	 * @return int 0-15
+	 */
+	public function getLightFilter() : int{
+		return 15;
+	}
+
+	/**
+	 * Returns whether this block will diffuse sky light passing through it vertically.
+	 * Diffusion means that full-strength sky light passing through this block will not be reduced, but will start being filtered below the block.
+	 * Examples of this behaviour include leaves and cobwebs.
+	 *
+	 * Light-diffusing blocks are included by the heightmap.
+	 *
+	 * @return bool
+	 */
+	public function diffusesSkyLight() : bool{
+		return false;
+	}
+
+	/**
 	 * AKA: Block->isPlaceable
 	 *
 	 * @return bool
@@ -522,13 +496,7 @@ class Block extends Position implements BlockIds, Metadatable{
 		return true;
 	}
 
-	public function isPlaceable(){
-		return $this->canBePlaced();
-	}
-
 	/**
-	 * AKA: Block->canBeReplaced()
-	 *
 	 * @return bool
 	 */
 	public function canBeReplaced(){
@@ -555,27 +523,6 @@ class Block extends Position implements BlockIds, Metadatable{
 		return false;
 	}
 
-	/**
-	 * AKA: Block->isActivable
-	 *
-	 * @return bool
-	 */
-	public function canBeActivated() : bool{
-		return false;
-	}
-
-	public function activate(){
-		return false;
-	}
-
-	public function deactivate(){
-		return false;
-	}
-
-	public function isActivated(Block $from = null){
-		return false;
-	}
-
 	public function hasEntityCollision(){
 		return false;
 	}
@@ -585,10 +532,39 @@ class Block extends Position implements BlockIds, Metadatable{
 	}
 
 	/**
+	 * Returns whether this block type can be turned into farmland by right-clicking on it with a hoe.
+	 * @return bool
+	 */
+	public function canBeTilled() : bool{
+		return false;
+	}
+
+	/**
+	 * Returns whether entities can climb up this block.
+	 * @return bool
+	 */
+	public function canClimb() : bool{
+		return false;
+	}
+
+	/**
 	 * @return string
 	 */
 	public function getName(){
-		return "Unknown";
+		return $this->fallbackName;
+	}
+
+	/**
+	 * Sets the fallback English name of the block.
+	 * @since API 3.0.0
+	 *
+	 * @param string $name
+	 * @return $this
+	 */
+	public function setName(string $name){
+		$this->fallbackName = $name;
+
+		return $this;
 	}
 
 	/**
@@ -634,14 +610,14 @@ class Block extends Position implements BlockIds, Metadatable{
 	 *
 	 * @param Item $item
 	 *
-	 * @return array
+	 * @return Item[]
 	 */
-	public function getDrops(Item $item) : array{
+	public function getDrops(Item $item){
 		if(!isset(self::$list[$this->getId()])){ //Unknown blocks
 			return [];
 		}else{
 			return [
-				[$this->getId(), $this->getDamage(), 1],
+				Item::get($this->getId(), $this->getDamage(), 1)
 			];
 		}
 	}
@@ -664,19 +640,19 @@ class Block extends Position implements BlockIds, Metadatable{
 				($this->getToolType() === Tool::TYPE_SHOVEL and ($tier = $item->isShovel()) !== false)
 			){
 				switch($tier){
-					case Tool::TIER_WOODEN:
+					case TieredTool::TIER_WOODEN:
 						$base /= 2;
 						break;
-					case Tool::TIER_STONE:
+					case TieredTool::TIER_STONE:
 						$base /= 4;
 						break;
-					case Tool::TIER_IRON:
+					case TieredTool::TIER_IRON:
 						$base /= 6;
 						break;
-					case Tool::TIER_DIAMOND:
+					case TieredTool::TIER_DIAMOND:
 						$base /= 8;
 						break;
-					case Tool::TIER_GOLD:
+					case TieredTool::TIER_GOLD:
 						$base /= 12;
 						break;
 				}
@@ -710,6 +686,19 @@ class Block extends Position implements BlockIds, Metadatable{
 		}
 
 		return Block::get(Item::AIR, 0, Position::fromObject(Vector3::getSide($side, $step)));
+	}
+
+	/**
+	 * Returns an array of blocks which are considered a part of this block. This is usually just the block itself, but in the case of
+	 * - doors and double plants: will return the top and bottom half (if present)
+	 * - beds: will return the top and bottom halves of the bed (if present)
+	 *
+	 * Used for sending block updates to clients to revert interaction and breaking events if they are cancelled server-side for whatever reason.
+	 *
+	 * @return Block[]
+	 */
+	public function getAffectedBlocks() : array{
+		return [$this];
 	}
 
 	/**
