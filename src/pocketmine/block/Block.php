@@ -191,6 +191,7 @@ class Block extends Position implements BlockIds, Metadatable{
 			self::registerBlock(new BrewingStand());
 			self::registerBlock(new EndPortalFrame());
 			self::registerBlock(new EndStone());
+			self::registerBlock(new EnderChest());
 			self::registerBlock(new RedstoneLamp());
 			self::registerBlock(new LitRedstoneLamp());
 			self::registerBlock(new SandstoneStairs());
