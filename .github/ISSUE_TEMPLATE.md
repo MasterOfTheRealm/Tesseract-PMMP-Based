@@ -16,7 +16,7 @@ NOTE: If you are using WINDOWS 10 Edition, please remember to let us know!
 * Tesseract Version: 1.3.0 Unity
 * PHP:
 * Server OS:
-* Game version: 1.1.x
+* Game version: 1.1.0.55
 * Server host:
 <!--- 
 Explain what your server is being hosted on. Examples: Home computer, EnderCrate, VirtualGladiators, etc. 
