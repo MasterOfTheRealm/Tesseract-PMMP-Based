@@ -22,7 +22,6 @@
 namespace pocketmine;
 
 use pocketmine\block\Bed;
-use pocketmine\block\Noteblock;
 use pocketmine\block\Block;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
