@@ -7,12 +7,12 @@ Contact us on [DISCORD](https://discord.gg/zYZmpec) for support
 Contact us on [TWITTER](http://www.twitter.com/TesseractPHP) for support**
 
 ## Information Title
-**TEXTURES PACKS CURRENTLY ARE IN BETA, PLEASE REPORT ANY BUGS!** <br>
+**We are no longer a spoon of Genisys but a spoon of the new home of pocketmine-mp!** <br>
 
 ## Notice
 
-**Tesseract is supported to Minecraft:PE 1.1.x (PE & Win10) <br>
-Report any issues and we will try to fix them for you.**  <br>
+**Tesseract is supported to Minecraft:PE 1.1.x (PE & Win10)** <br>
+**Report any issues and we will try to fix them for you.**  <br>
 
 ## Builds
 __Travis-CI Build:__<br>
