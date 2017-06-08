@@ -175,59 +175,36 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->shutdown = true;
 	}
 
-	public function send($message, $level, $prefix, $color, $direct = false){
-		if($direct === true) {
-			$message = TextFormat::toANSI($message);
-			$cleanMessage = TextFormat::clean($message);
-		
-			if(!Terminal::hasFormattingCodes()){
-				echo str_repeat("\010", strlen(TextFormat::clean(TextFormat::toANSI(TextFormat::GREEN . "/"))));
-				echo $cleanMessage . PHP_EOL;
-				echo TextFormat::toANSI(TextFormat::GREEN . "/");
-			} else {
-				echo str_repeat("\010", strlen(TextFormat::clean(TextFormat::toANSI(TextFormat::GREEN . "/"))));
-				echo $message . PHP_EOL;
-				echo TextFormat::toANSI(TextFormat::GREEN . "/");
-			}
+	protected function send($message, $level, $prefix, $color){
+		$now = time();
 
-			if($this->attachment instanceof \ThreadedLoggerAttachment) {
-				$this->attachment->call($level, $message);
-			}
-			} else {
-			$now = time();
-		
-			$thread = \Thread::getCurrentThread();
-			if($thread === null) {
-				$threadName = "Server thread";
-			} elseif($thread instanceof Thread or $thread instanceof Worker) {
-				$threadName = $thread->getThreadName() . " thread";
-			} else {
-				$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
-			}
+		$thread = \Thread::getCurrentThread();
+		if($thread === null){
+			$threadName = "Server thread";
+		}elseif($thread instanceof Thread or $thread instanceof Worker){
+			$threadName = $thread->getThreadName() . " thread";
+		}else{
+			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";
+		}
 
-			$message = TextFormat::toANSI(TextFormat::AQUA . date("H:i:s", $now) . " " . TextFormat::RESET . $color . "[" . $prefix . "] " . $message . TextFormat::RESET);
-			$cleanMessage = TextFormat::clean($message);
+		$message = TextFormat::toANSI(TextFormat::AQUA . "[" . date("H:i:s", $now) . "] " . TextFormat::RESET . $color . "[" . $threadName . "/" . $prefix . "]:" . " " . $message . TextFormat::RESET);
+		$cleanMessage = TextFormat::clean($message);
 
-			if(!Terminal::hasFormattingCodes()){
-				echo str_repeat("\010", strlen(TextFormat::clean(TextFormat::toANSI(TextFormat::GREEN . "/"))));
-				echo $cleanMessage . PHP_EOL;
-				echo TextFormat::toANSI(TextFormat::GREEN . "/");
-			} else {
-				echo str_repeat("\010", strlen(TextFormat::clean(TextFormat::toANSI(TextFormat::GREEN . "/"))));
-				echo $message . PHP_EOL;
-				echo TextFormat::toANSI(TextFormat::GREEN . "/");
-			}
+		if(!Terminal::hasFormattingCodes()){
+			echo $cleanMessage . PHP_EOL;
+		}else{
+			echo $message . PHP_EOL;
+		}
 
-			if($this->attachment instanceof \ThreadedLoggerAttachment){
-				$this->attachment->call($level, $message);
-			}
+		if($this->attachment instanceof \ThreadedLoggerAttachment){
+			$this->attachment->call($level, $message);
+		}
 
-			$this->logStream[] = date("Y-m-d", $now) . " " . $cleanMessage . "\n";
-			if($this->logStream->count() === 1){
-				$this->synchronized(function(){
-					$this->notify();
-				});
-			}
+		$this->logStream[] = date("Y-m-d", $now) . " " . $cleanMessage . "\n";
+		if($this->logStream->count() === 1){
+			$this->synchronized(function(){
+				$this->notify();
+			});
 		}
 	}
 
