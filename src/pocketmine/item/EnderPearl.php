@@ -21,14 +21,12 @@
  */
 
 namespace pocketmine\item;
-class EnderPearl extends Launchable{
-	protected $entityname = "EnderPearl";
-	protected $f = 1.5;
-	
+
+class EnderPearl extends Item{
 	public function __construct($meta = 0, $count = 1){
-		parent::__construct(self::ENDERPEARL, 0, $count, "Ender Pearl");
+		parent::__construct(Item::ENDER_PEARL, $meta, $count, "Ender Pearl");
 	}
-	public function getMaxStackSize(){
+	public function getMaxStackSize() : int{
 		return 16;
 	}
 }

@@ -39,6 +39,7 @@ class InventoryType{
 	const BREWING_STAND = 7;
 	const ANVIL = 8;
 	const ENCHANT_TABLE = 9;
+	const ENDER_CHEST = 13;
 
 	private static $default = [];
 
@@ -70,6 +71,7 @@ class InventoryType{
 			static::WORKBENCH =>     new InventoryType(10, "Crafting", WindowTypes::WORKBENCH), //9 CRAFTING slots, 1 RESULT
 			static::FURNACE =>       new InventoryType(3, "Furnace", WindowTypes::FURNACE), //2 INPUT, 1 OUTPUT
 			static::ENCHANT_TABLE => new InventoryType(2, "Enchant", WindowTypes::ENCHANTMENT), //1 INPUT/OUTPUT, 1 LAPIS
+			static::ENDER_CHEST =>   new InventoryType(27, "Ender Chest",  WindowTypes::CONTAINER),
 			static::BREWING_STAND => new InventoryType(4, "Brewing", WindowTypes::BREWING_STAND), //1 INPUT, 3 POTION
 			static::ANVIL =>         new InventoryType(3, "Anvil", WindowTypes::ANVIL) //2 INPUT, 1 OUTP
 		];

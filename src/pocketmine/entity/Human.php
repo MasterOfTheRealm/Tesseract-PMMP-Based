@@ -28,6 +28,7 @@ use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
+use pocketmine\inventory\EnderChestInventory;
 use pocketmine\item\Consumable;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item as ItemItem;
@@ -55,7 +56,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 	/** @var PlayerInventory */
 	protected $inventory;
-
+	
+	/** @var EnderChestInventory */
+	protected $enderChestInventory;
+	
 	/** @var UUID */
 	protected $uuid;
 	protected $rawUUID;
