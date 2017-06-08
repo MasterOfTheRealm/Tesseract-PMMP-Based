@@ -38,7 +38,7 @@ use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
-use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+//use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 
 #ifndef COMPILE
 use pocketmine\utils\Binary;
