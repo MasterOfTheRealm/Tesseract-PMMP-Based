@@ -300,6 +300,10 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function getInventory(){
 		return $this->inventory;
 	}
+	
+	public function getEnderChestInventory(){
+  		return $this->enderChestInventory;
+    }
 
 	/**
 	 * Returns whether this entity is currently using its held item.
@@ -323,6 +327,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$this->setDataProperty(self::DATA_PLAYER_BED_POSITION, self::DATA_TYPE_POS, [0, 0, 0], false);
 
 		$this->inventory = new PlayerInventory($this);
+		
+		$this->enderChestInventory = new EnderChestInventory($this, ($this->namedtag->EnderChestInventory ?? null));
+		
 		if($this instanceof Player){
 			$this->addWindow($this->inventory, 0);
 		}else{
@@ -520,6 +527,21 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					$this->namedtag->Inventory[$slot] = $item->nbtSerialize($slot);
 				}
 			}
+			
+			$this->namedtag->EnderChestInventory = new ListTag("EnderChestInventory", []);
+			
+			$this->namedtag->Inventory->setTagType(NBT::TAG_Compound);		
+			
+			if($this->enderChestInventory !== null){
+				for($slot = 0; $slot < $this->enderChestInventory->getSize(); $slot++){
+					if(($item = $this->enderChestInventory->getItem($slot)) instanceof ItemItem){
+						$this->namedtag->EnderChestInventory[$slot] = $item->nbtSerialize($slot);
+					}			
+									
+				}		
+					
+			}
+
 
 			$this->namedtag->SelectedInventorySlot = new IntTag("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
 		}
