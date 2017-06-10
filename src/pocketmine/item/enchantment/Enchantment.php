@@ -90,14 +90,15 @@ class Enchantment{
 	const TYPE_WEAPON_LOOTING = 14;
 	const TYPE_MINING_EFFICIENCY = 15;
 	const TYPE_MINING_SILK_TOUCH = 16;
-	const TYPE_MINING_DURABILITY = 17;
-	const TYPE_MINING_FORTUNE = 18;
-	const TYPE_BOW_POWER = 19;
-	const TYPE_BOW_KNOCKBACK = 20;
-	const TYPE_BOW_FLAME = 21;
-	const TYPE_BOW_INFINITY = 22;
-	const TYPE_FISHING_FORTUNE = 23;
-	const TYPE_FISHING_LURE = 24;
+	const UNBREAKING = 17;
+	const TYPE_MINING_DURABILITY = 18;
+	const TYPE_MINING_FORTUNE = 19;
+	const TYPE_BOW_POWER = 20;
+	const TYPE_BOW_KNOCKBACK = 21;
+	const TYPE_BOW_FLAME = 22;
+	const TYPE_BOW_INFINITY = 23;
+	const TYPE_FISHING_FORTUNE = 24;
+	const TYPE_FISHING_LURE = 25;
 
 	const RARITY_COMMON = 0;
 	const RARITY_UNCOMMON = 1;
@@ -159,6 +160,7 @@ class Enchantment{
 		self::$enchantments[self::TYPE_WEAPON_LOOTING] = new Enchantment(self::TYPE_WEAPON_LOOTING, "%enchantment.weapon.looting", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_SWORD);
 		self::$enchantments[self::TYPE_MINING_EFFICIENCY] = new Enchantment(self::TYPE_MINING_EFFICIENCY, "%enchantment.mining.efficiency", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_TOOL);
 		self::$enchantments[self::TYPE_MINING_SILK_TOUCH] = new Enchantment(self::TYPE_MINING_SILK_TOUCH, "%enchantment.mining.silktouch", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_TOOL);
+		self::$enchantments[self::UNBREAKING] = new Enchantment(self::UNBREAKING, "%enchantment.mining.unbreaking", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_TOOL);
 		self::$enchantments[self::TYPE_MINING_DURABILITY] = new Enchantment(self::TYPE_MINING_DURABILITY, "%enchantment.mining.durability", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_TOOL);
 		self::$enchantments[self::TYPE_MINING_FORTUNE] = new Enchantment(self::TYPE_MINING_FORTUNE, "%enchantment.mining.fortune", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_TOOL);
 		self::$enchantments[self::TYPE_BOW_POWER] = new Enchantment(self::TYPE_BOW_POWER, "%enchantment.bow.power", self::RARITY_UNCOMMON, self::ACTIVATION_EQUIP, self::SLOT_BOW);
@@ -266,6 +268,8 @@ class Enchantment{
 				return 10;
 			case self::TYPE_MINING_SILK_TOUCH:
 				return 1;
+			case self::UNBREAKING:
+				return 5;
 			case self::TYPE_MINING_DURABILITY:
 				return 5;
 			case self::TYPE_MINING_FORTUNE:
@@ -309,6 +313,7 @@ class Enchantment{
 			case self::TYPE_MINING_EFFICIENCY:
 				return 5;
 			case self::TYPE_MINING_SILK_TOUCH:
+			case self::UNBREAKING:
 				return 1;
 			case self::TYPE_MINING_DURABILITY:
 			case self::TYPE_MINING_FORTUNE:
