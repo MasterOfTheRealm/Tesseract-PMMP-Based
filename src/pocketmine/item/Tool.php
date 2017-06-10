@@ -53,7 +53,7 @@ abstract class Tool extends Durable{
 	public function getAttackPoints() : float{
 		$points = $this->attackPoints;
 
-		if(($ench = $this->getEnchantment(Enchantment::SHARPNESS)) !== null){
+		if(($ench = $this->getEnchantment(Enchantment::TYPE_WEAPON_SHARPNESS)) !== null){
 			$points += ($ench->getLevel() + 1); //In PC this is multiplied by 0.5
 		}
 
