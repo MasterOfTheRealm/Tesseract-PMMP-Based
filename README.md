@@ -3,11 +3,6 @@
 -------------
 **Tesseract is the advanced server software based on the original Pocketmine-MP and the new PMMP <br>
 Tesseract supports packet and event debug system (for plugin developers) <br>
-Contact us on [DISCORD](https://discord.gg/zYZmpec) for support
-Contact us on [TWITTER](http://www.twitter.com/TesseractPHP) for support**
-
-## Information Title
-**We are no longer a spoon of Genisys but a spoon of the new home of pocketmine-mp!** <br>
 
 ## Notice
 
